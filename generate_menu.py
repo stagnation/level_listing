@@ -82,10 +82,7 @@ fileformat = '.jpg'
 reqest_level_dirr = index_dirr + "images/quake/request/"
 html_header = index_dirr + "html_header.html"
 html_footer = index_dirr + "html_footer.html"
-html_body_dual = open(index_dirr + "html_body_dual.html", "r").read()
-html_map_title_dual = open(index_dirr + "html_map_title_dual.html", "r").read()
-html_body_single = open(index_dirr + "html_body_single.html", "r").read()
-html_map_title_single = open(index_dirr + "html_map_title_single.html", "r").read()
+html_level_body = open(index_dirr + "html_level_body.html", 'r').read()
 html_division_title = open(index_dirr + "html_division_title.html", "r").read()
 
 levelshot_extract_path = index_dirr +"images/quake/online/"
@@ -103,6 +100,8 @@ footer_obj = open(html_footer, "r")
 
 header = header_obj.read()
 footer = footer_obj.read()
+
+num_brs = 21
 
 ####################
 #LEVELS ON SERVER
@@ -138,25 +137,16 @@ interim_title = ""
 interim_body = ""
 
 
-for i in range (0, num_pk3s, 2): #for all levels
-    j = i + 1 
-    if not (i == num_pk3s - 1): #unless last (odd level) - process levels in pairs
+for i in range (0, num_pk3s, 1): #for all levels
+        
+        interim_title = html_level_body.format(map = level_list[i].filename, comment = "\callvote map " + level_list[i].levelcode, levelshot =level_list[i].levelshot_ext)
+        
 
-        interim_title = html_map_title_dual.format(map1=level_list[i].filename, map2=level_list[j].filename, comment1="\callvote map "+level_list[i].levelcode, comment2="\callvote map " + level_list[j].levelcode)
-        print
-        interim_body = html_body_dual.format(path1=level_list[i].levelshot_ext, path2=level_list[j].levelshot_ext)
         
         menu_obj.write(interim_title)
-        menu_obj.write(interim_body)
-        
-    else: #last single level - process individually
-        
-        interim_title = html_map_title_single.format(map1=level_list[i].filename, comment1="\callvote map "+ level_list[i].levelcode)
-        
-        interim_body = html_body_single.format(path1=level_list[i].levelshot_ext)
-        
-        menu_obj.write(interim_title)
-        menu_obj.write(interim_body)
+        if i % 2 == 1 or i == num_pk3s - 1: #every second map, i e the right map out of two. and last
+            for j in range(num_brs):
+                menu_obj.write("<br/>")
 
 
 ####################
@@ -180,20 +170,14 @@ for j in range(num_levels):
 interim_title = ""
 interim_body = ""
 #loop over the applicable levelshots and generate the body of the html file
-for i in range(0, num_levels, 2):
-    j = i + 1
-    if not (i == num_levels - 1):
-        interim_title = html_map_title_dual.format(map1=levelname_list[i], map2=levelname_list[j], comment1= level_comments[i], comment2 = level_comments[j])
-        
+for i in range(0, num_levels, 1):
+
+        interim_title = html_level_body.format(map = levelname_list[i], comment = level_comments[i], levelshot = levelshot_list[i])
         menu_obj.write(interim_title)
         
-        interim_body = html_body_dual.format(path1 = levelshot_list[i], path2 = levelshot_list[j])
-        menu_obj.write(interim_body)
-    else:
-        interim_title = html_map_title_single.format(map1 = levelname_list[i], comment1 = level_comments[i])
-        menu_obj.write(interim_title)
-        interim_body = html_body_single.format(path1 = levelshot_list[i])
-        menu_obj.write(interim_body)
+        if i % 2 == 1 or i == num_levels - 1: #every second map, i e the right map out of two. and last
+            for j in range(num_brs):
+                menu_obj.write("<br/>")
     
 
         
