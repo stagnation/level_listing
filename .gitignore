@@ -2,3 +2,7 @@
 *.jpg
 .DS_Store
 menu.html
+images/quake/*
+*.bsp
+*.png
+*.jpg

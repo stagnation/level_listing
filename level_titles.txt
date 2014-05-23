@@ -1,0 +1,19 @@
+oxodm27	chemicalreaction 
+oxodm120	Cure 
+oxodm32	deepinside
+ospca1	American CAN-Co
+ospctf1	White Noise - F3 Edition
+ospctf2	Crossed Paths - F3 Edition
+ospdm1	New Edge
+ospdm10	Apologie
+ospdm11	The Olden Domain
+ospdm12	Deschutes
+ospdm2	Batcula
+ospdm3	Scrap Metal ][ - Tourney Edition -
+ospdm4	Bitter Embrace - Tourney Edition -
+ospdm5	Deep Inside
+ospdm6	Suicide by DruZli
+ospdm7	The Dancehall
+ospdm8	The Chastity Belt Duel (Orange remix)
+ospdm9	Anticipating Oblivion - Tourney Edition -
+oxodm121	Repent
