@@ -5,6 +5,8 @@ import os.path
 
 
 class QuakeLevel:
+    longname = ""
+    arena_file = ""
     levelcode = ""
     filename = ""
     filename_full = ""
@@ -12,26 +14,51 @@ class QuakeLevel:
     levelshot_ext = ""
     content = []
     
-    def init(self, pk3_filepath, levelshot_extract_path):
+    def init(self, pk3_filepath, levelshot_extract_path, temporary_file_storage):
         
         self.filename_full = os.path.basename(pk3_filepath)
         
         self.filename = self.filename_full[: self.filename.find('.') - 3] #minus 3 ???? 
         #removes fileformat from name
+        
+        #construct a list of all member inside the 'zip' file.
         zipper = zipfile.ZipFile(pk3_filepath, 'r')
         content = zipper.namelist()
         
         for cont in content:
+            #find levelshot: jpg or png
             if cont.startswith("levelshots") and cont.endswith(".jpg"):
                 self.levelshot_int = cont
+            elif cont.startswith("levelshots") and cont.endswith(".png"):
+                self.levelshot_int = cont    
+                
+                
+            #find levelcode from the .bsp file    
             elif cont.endswith(".bsp"):
                 self.levelcode = cont.replace("maps/", '').replace(".bsp", '')
                 
-        zipper.extract(self.levelshot_int, levelshot_extract_path)    
-        self.levelshot_ext = levelshot_extract_path + self.levelshot_int
-        
+            #fine .arena file with map metadata
+            elif cont.endswith(".arena"):
+                self.arena_file = cont
+                
+        if self.levelshot_int != "":    #if there is no levelshot, do nothing    
+            zipper.extract(self.levelshot_int, levelshot_extract_path)    
+            self.levelshot_ext = levelshot_extract_path + self.levelshot_int
+            
+        #extract the .arena file with meta data to a temporary storage to read data from it.
+        if self.arena_file != "":
+            zipper.extract(self.arena_file, temporary_file_storage)
+            with open(os.path.join(temporary_file_storage, self.arena_file)) as f: 
+                arena_data = f.readlines()
+            for line in (arena_data):
+                if "longname" in line:
+                    self.longname = line[11: -3] #
+                #if "map" in line: alternative metho of getting the levelcode. which is better?
+                #    print line[6: -3] #
+            
         
     def check_if_override(self, levelshot_override_path):
+        print levelshot_override_path
         
         if self.levelshot_ext == "":
             print "run init first"
@@ -57,6 +84,10 @@ index_dirr = sys.argv[1]
 
 pk3_dirr = sys.argv[2]
 print len(sys.argv)
+
+if len(sys.argv) == 5:
+    temporary_file_dir = sys.argv[4]
+
 if len(sys.argv) > 3:
     levelshot_override_path = sys.argv[3]
 else:
@@ -84,9 +115,9 @@ html_divider_title = open(html_divider_title_path, 'r').read()
 levelshot_extract_path = os.path.join(index_dirr, "images/quake/online/")
 
 
-menu_html_file = os.path.join(index_dirr, "menu.html")
+menu_html_file = os.path.join(index_dirr, "index.html")
 
-with open(reqest_level_dirr + "comments.txt") as f: 
+with open(os.path.join(reqest_level_dirr, "comments.txt")) as f: 
     level_comments = f.readlines()
 
 
@@ -118,13 +149,14 @@ print pk3_dirr
 pk3_list = glob.glob(pk3_dirr + '/' + '*.pk3')
 
 num_pk3s = len(pk3_list)
+print "found " + str(num_pk3s) + " pk3 files"
 
 level_list = []
 
 #create a list of all levels from .pk3 files and init also extracts the levelshot
 for j in range(num_pk3s):
     level = QuakeLevel()
-    level.init(pk3_list[j], levelshot_extract_path)
+    level.init(pk3_list[j], levelshot_extract_path, temporary_file_dir)
     level.check_if_override(levelshot_override_path)
     
     level_list.append(level)
@@ -139,7 +171,7 @@ interim_body = ""
 #for all levels
 for (i, level) in enumerate(level_list):
         
-    interim_title = html_level_body.format(map = level.filename, comment = "\callvote map " + level.levelcode, levelshot =level.levelshot_ext)
+    interim_title = html_level_body.format(map = level.longname, comment = "\callvote map " + level.levelcode, levelshot =level.levelshot_ext)
         
     menu_obj.write(interim_title)
     if i % 2 == 1 or i == num_pk3s - 1: #every second map, i e the right map out of two. and last
