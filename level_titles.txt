@@ -1,19 +1,206 @@
-oxodm27	chemicalreaction 
-oxodm120	Cure 
-oxodm32	deepinside
-ospca1	American CAN-Co
-ospctf1	White Noise - F3 Edition
-ospctf2	Crossed Paths - F3 Edition
+almostlost	almostlost
+asylum	asylum
+aty3dm9msc2013	Sector 9 The Cytherean Outpost
+b0_beta6	b0 promode tricking
+b0_beta6	b0 promode tricking
+blackcathedral	blackcathedral
+brickyard	brickyard
+bst3dm1	Terminatria
+canned	Canned heat
+oxodm27	chemicalreaction for Quake 3 from Quake Live
+oxodm31	concretepalace for Quake 3 from Quake Live
+cos1_beta7b	cos1_beta7b
+courage-b8	Mayois Courage
+crescent	Crescent
+ct3dm5	Left Behind
+cure	cure
+oxodm120	Cure for Quake 3
+czg3team1	The Longest Capture
+dc_map02	dc_map02
+dc_map03	dc_map03
+dc_map04	dc_map04
+dc_map05	dc_map05
+dc_map06	dc_map06
+dc_map07	dc_map07
+dc_map08	dc_map08
+dc_map09	dc_map09
+dc_map10	dc_map10
+dc_map11	dc_map11
+dc_map12	dc_map12
+dc_map13	dc_map13
+dc_map14	dc_map14
+dc_map15	dc_map15
+dc_map16	dc_map16
+dc_map17	dc_map17
+dc_map18	dc_map18
+dc_map19	dc_map19
+dc_map20	dc_map20
+dc_map21	dc_map21
+dc_map22	dc_map22
+dc_map23	dc_map23
+dc_map24	dc_map24
+oxodm32	deepinside for Quake 3 from Quake Live
+oxodm58	Delirium OLD
+oxodm58a	Delirium
+oxodm33	demonkeep for Quake 3 from Quake Live
+oxodm35	Diesirae for Quake 3 from Quake Live
+oxodm38	Dreadfulplace for Quake 3 from Quake Live
+oxodm40	Electrichead for Quake 3 from Quake Live
+oxodm43	eyetoeye for Quake 3 from Quake Live
+furiousheights	furiousheights
+oxodm73	Fuse for Quake 3
+globulus2	globulus2
+oxodm47	Gothic Rage
+hiddenfortress	hiddenfortress
+hub3aeroq3	Aerowalk
+hub3dm1	Dismemberment
+oxodm57	Intervention
+ironworks	ironworks
+jul2c	No more games
+jvr3ctf1	The Broken Bricks
+krctf01	Mazeeur
+oxodm105	Left Behind for Quake 3 from Quake Live
+leviathan	leviathan
+oxodm62	lostworld for Quake 3 from Quake Live
+oxodm62	lostworld for Quake 3 from Quake Live
+lun3dm5	Lun3DM5
+13circle	Circle Of Death by sst13
+cpm3a	use and abuse by fxrjude swelt remix
+cu3dm1a	cu3dm1a
+oxodm1	dedust2 for quake 3
+oxodm102_b1	Campgrounds Redux Q4DM9
+oxodm2	Aero Blood Run Remix Blood Run in aero style
+sorrow	Sorrow
+oxodm134	Monastery
+oxodm63	Namelessplace
+ospdm5a	Deep Inside
+ospca1	American CANCo
+ospctf1	White Noise  F3 Edition
+ospctf2	Crossed Paths  F3 Edition
 ospdm1	New Edge
 ospdm10	Apologie
 ospdm11	The Olden Domain
 ospdm12	Deschutes
 ospdm2	Batcula
-ospdm3	Scrap Metal ][ - Tourney Edition -
-ospdm4	Bitter Embrace - Tourney Edition -
+ospdm3	Scrap Metal   Tourney Edition 
+ospdm4	Bitter Embrace  Tourney Edition 
 ospdm5	Deep Inside
 ospdm6	Suicide by DruZli
 ospdm7	The Dancehall
-ospdm8	The Chastity Belt Duel (Orange remix)
-ospdm9	Anticipating Oblivion - Tourney Edition -
+ospdm8	The Chastity Belt Duel Orange remix
+ospdm9	Anticipating Oblivion  Tourney Edition 
+overkill	Overkill
+phantq3dm3_rev	Corrosion
+pom_bots	Pyramid Of the Bots
+pukka3tourney2	pukka3tourney2 beta
+pukka3tourney7	Tortured by thefury
+purgatory	purgatory
+q3deck	Deck
+q3dmp23	Underdog
+repent	repent
+q3shw24	The Dreadful place
+q3skorectf7	q3skorectf7 by David skOre Deutsch
+q3whdm1	Tomb of Retaliation  by Wilhelm Hell
+q3wcp7	Dynatron  3W
+q3wcp8	Harsh Grounds  3W
+q3wcp5	Shinning Forces  3W
+q3wcp6	Devolved CTF  3W
+q3wcp4	Schadenfreude 2001  3W
+q3wcp2	Cold Crossings  3W
+q3wcp1	Japanese Castles  3w
+q3wxs1	Harsh Grounds  3W
+q3wcp3	Hot Crossings  3W
+q3wcp1	Silly Shootings
+q3wcp10	Silly Shootings
+q3wcp11	q3wcp11
+q3wcp12	q3wcp12
+q3wcp13	q3wcp13
+q3wcp14	q3wcp14
+q3wcp15	q3wcp15
+q3wcp16	q3wcp16
+q3wcp9	q3wcp9
+q3wxs2	q3wxs2
+q3w1	Silly CTF
+q3w2	Silly CTF
+q3w3	q3w3
+q3w4	q3w4
+q3w5	q3w5
+q3w6	q3w6
+q3w7	q3w7
+q3w8	q3w8
+q3wxs3	q3wxs3
+q3wcp18	La Bastir
+q3wcp20	q3wcp20
+q3wcp19	q3wcp19
+q3wcp22	q3wcp22
+q3wcp23	q3wcp23
+q3wcp24	q3wcp24
+q3wcp17	q3wcp17
+q3wcp21	q3wcp21
+quarantine	quarantine
+ra3map1	ra3map1
+ra3map11	ra3map11
+ra3map2	ra3map2
 oxodm121	Repent
+oxodm121	Repent
+rota3ctf1	Iris
+sanctorium	sanctorium
+siberia	siberia
+silence	silence
+sinister	sinister
+solitude	Solitude
+sorrow	sorrow
+storm3tourney8	Devilish
+oxodm22	superspace for Quake 3 from Quake Live
+oxodm86	Three Story
+trinity	trinity
+oxodm91	Verticalvengeance for Quake 3
+ztn3tourney1	Blood Run Tournament
+dm121	"Repent"
+
+oxodm121	"Repent"
+
+rota3ctf1	"Iris"
+
+sanctorium	sanctorium
+siberia	siberia
+silence	silence
+sinister	sinister
+solitude	"Solitude"
+
+sorrow	sorrow
+storm3tourney8	"Devilish"
+
+oxodm22	"superspace for Quake 3 from Quake Live"
+
+oxodm86	"Three Story"
+
+trinity	trinity
+oxodm91	"Verticalvengeance for Quake 3"
+
+ztn3tourney1	"Blood Run Tournament"
+
+tn3tourney1	"Blood Run Tournament"
+
+ent"
+
+rota3ctf1	longname    "Iris"
+
+sanctorium	sanctorium
+siberia	siberia
+silence	silence
+sinister	sinister
+solitude	longname        "Solitude"
+
+sorrow	sorrow
+storm3tourney8	longname        "Devilish"
+
+oxodm22	"superspace for Quake 3 from Quake Live"
+
+oxodm86	"Three Story"
+
+trinity	trinity
+oxodm91	"Verticalvengeance for Quake 3"
+
+ztn3tourney1	longname "Blood Run Tournament"
+

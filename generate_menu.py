@@ -7,8 +7,16 @@ import re
 def is_image(file):
     if file.endswith("jpg"):
         return True
+    elif file.endswith("JPG"):
+        return True
+    elif file.endswith("tga"):
+        return True
+    elif file.endswith("TGA"):
+        return True      
     elif file.endswith("png"):
         return True
+    elif file.endswith("PNG"):
+        return True    
 
     else:
         return False 
@@ -38,16 +46,17 @@ class QuakeLevel:
     
         self.is_mappack = False
         
-        
-        
-        
         self.filename_full = os.path.basename(pk3_filepath)
         
         self.filename = self.filename_full[: self.filename.find('.') - 3] #minus 3 ???? 
         #removes fileformat from name
         
         #construct a list of all member inside the 'zip' file.
-        zipper = zipfile.ZipFile(pk3_filepath, 'r')
+        try:
+            zipper = zipfile.ZipFile(pk3_filepath, 'r')
+        except:
+            print "Error: " + self.filename + " could not be opened. exiting."
+            sys.exit()    
         content = zipper.namelist()
         
         try:
@@ -55,9 +64,7 @@ class QuakeLevel:
             print str(self.filename) + " is a mappack"
             print ""
             self.is_mappack = True
-            
         except KeyError: #error from get info i e not a mappack, ignore
-            print ""
         
         for cont in content:
             #find levelshot: is_image details acceptable image files
@@ -72,6 +79,16 @@ class QuakeLevel:
             #fine .arena file with map metadata
             elif cont.endswith(".arena"):
                 self.arena_file = cont
+                
+
+        #at this point all variables should be initilized, parsed from the pk3 file.        
+        if self.arena_file == "":
+            print "warning no arena file found for"
+            print self.filename
+            print "longname/s copied from levelcode/s"
+            print ""
+            self.longname_list = self.levelcode_list[:]
+            
                     
                     
         for levelshot in self.levelshot_int_list:
@@ -89,9 +106,15 @@ class QuakeLevel:
                 arena_data = f.readlines()
             for line in (arena_data):
                 if "longname" in line:
-                    self.longname_list.append(line[11: -3]) #
+                    longname = line[line.find('"'):]
+                    longname = re.sub('[^0-9a-zA-Z ]+', '', longname)
+                    self.longname_list.append(longname) #
+                    
                 if "map" in line: #alternative metho of getting the levelcode. which is better?
-                    mapcode = line[5:]
+                    mapcode = line[line.find('"'):]
+                    
+                     
+                     
                     mapcode = re.sub('[^0-9a-zA-Z]+', '', mapcode)
                     arena_file_map_code_list.append(mapcode)
                 
@@ -104,17 +127,39 @@ class QuakeLevel:
         #levelcode list is sorted like 1 10 11 2 3 4 ...
         #arena_file_map_code_list is sorted like 1 2 3 4 ... 10 11
         
+        
         longname_list_copy = self.longname_list[:]
         possible_mismatch = False
-        
-        for i, mapcode in enumerate(self.levelcode_list):
-            if self.levelcode_list[i] != arena_file_map_code_list[i]:
-                possible_mismatch = True
-                #find the index in levelcode_list that corresponds to the given arena_file
-                
-                
-                k = arena_file_map_code_list.index(mapcode)
-                self.longname_list[i] = longname_list_copy[k]
+                    
+        if self.arena_file != "":
+            for i, mapcode in enumerate(self.levelcode_list):
+                if i >= len(arena_file_map_code_list):
+                    #if not all maps are listed in the arena file
+                    #should still be able to work with the index lookup
+                    print "warning: not all maps are listed in the arena file of " + self.filename
+                    possible_mismatch = True
+                    #find the index in levelcode_list that corresponds to the given arena_file
+                    try:
+                        k = arena_file_map_code_list.index(mapcode)
+                        try:
+                            self.longname_list[i] = longname_list_copy[k]
+                        except IndexError:
+                            self.longname_list.append(longname_list_copy[k])
+                    except ValueError:
+                        print "warning: levelcodes from .bsp files in " + self.filename + " do not match longnames parsed from the .arena file."
+                        
+                elif self.levelcode_list[i] != arena_file_map_code_list[i]:
+                    possible_mismatch = True
+                    #find the index in levelcode_list that corresponds to the given arena_file
+                    try:
+                        k = arena_file_map_code_list.index(mapcode)
+                        try:
+                            self.longname_list[i] = longname_list_copy[k]
+                        except IndexError:
+                            self.longname_list.append(longname_list_copy[k])    
+                    except ValueError:
+                        print "warning: levelcodes from .bsp files in " + self.filename + " do not match longnames parsed from the .arena file."
+                        
 
         if possible_mismatch:
             print "warning possible order mismatch between map name and mapcode + levelshot for"
@@ -160,12 +205,16 @@ class QuakeLevel:
         
 ###############################
 
-index_dirr = sys.argv[1]
+i = 1
+index_dirr = sys.argv[i]
 #index_dirr = "/Users/Spill/Documents/programering/quakeTML/git/level_listing/"
+i += 1
 
-pk3_dirr = sys.argv[2]
+pk3_dirr = sys.argv[i]
 print "found " + str(len(sys.argv)) + " input arguments"
 print ""
+i += 1
+
 
 
 #if the titles are not read from file all level titles will be saved to a file with their levelcodes.
@@ -175,30 +224,35 @@ print ""
 #make sure to run without reading the file before reading so all pk3 files are represented in the level 
 #title file.
 
-if len(sys.argv) > 5:
-    if sys.argv[5] in ["true", "t", "y", "1", "True"]:
+
+ 
+
+if len(sys.argv) > i:
+    levelshot_override_path = sys.argv[i]
+else:
+    levelshot_override_path = os.path.join(index_dirr, "levelshots/")
+print "workind dir is: " + index_dirr    
+i += 1
+
+if len(sys.argv) > i:
+    temporary_file_dir = sys.argv[i]
+else:
+    temporart_file_dir = index_dirr 
+i += 1 
+    
+if len(sys.argv) > i:
+    if sys.argv[i] in ["true", "t", "y", "1", "True", "read"]:
         print "reading titles file"
         read_level_titles = True
-    if sys.argv[5] in ["false", "f", "n", "0", "False"]:
+    if sys.argv[i] in ["false", "f", "n", "0", "False", "write"]:
         print "writing to titles file"
         read_level_titles = False
 else:
     read_level_titles = False            
-    
-
-if len(sys.argv) > 4:
-    temporary_file_dir = sys.argv[4]
-else:
-    temporart_file_dir = index_dirr    
-
-if len(sys.argv) > 3:
-    levelshot_override_path = sys.argv[3]
-else:
-    levelshot_override_path = os.path.join(index_dirr, "levelshots/")
-print "workind dir is: " + index_dirr    
+i += 1        
 
 
-
+print "---\n"
 
 
 ###############################
@@ -221,8 +275,9 @@ levelshot_extract_path = os.path.join(index_dirr, "images/quake/online/")
 menu_html_file = os.path.join(index_dirr, "index.html")
 level_title_file = os.path.join(index_dirr, "level_titles.txt")
 
-with open(os.path.join(reqest_level_dirr, "comments.txt")) as f: 
-    level_comments = f.readlines()
+comment_file = os.path.join(reqest_level_dirr, "comments.txt")
+comment_obj = open(comment_file, "ra+")
+level_comments = comment_obj.readlines()
 
 
 menu_obj = open(menu_html_file, "w")
@@ -258,19 +313,16 @@ num_brs = 21 #number of html line break tags needed between rows of floating "le
 
 
 menu_obj.write(header)
-interim_divider = html_divider_title.format(image = os.path.join(index_dirr, "images/online_icon.png"), title= "kartor att spela", line1 = "dessa finns och spelas med angivet kommand", line2 = "")
+interim_divider = html_divider_title.format(image = os.path.join(index_dirr, "images/online_icon.png"), title = "kartor att spela", line1 = "dessa finns och spelas med angivet kommand", line2 = "")
 menu_obj.write(interim_divider)
 
 #
-
-
-pk3_levelshot_path = os.path.join(pk3_dirr, "levelshots/")
 
 pk3_list = glob.glob(pk3_dirr + '/' + '*.pk3')
 
 num_pk3s = len(pk3_list)
 print "found " + str(num_pk3s) + " pk3 files"
-
+print "---"
 level_list = []
 
 #create a list of all levels from .pk3 files and init also extracts the levelshot
@@ -292,25 +344,44 @@ interim_body = ""
 for (i, level) in enumerate(level_list):
     num_maps = level.mapcount
     for j in range(num_maps):
+        levelcode = level.levelcode_list[j]
         if read_level_titles:
-            longname = read_title_names[read_title_codes.index(level.levelcode_list[j])]
+
+            try:
+                longname = read_title_names[read_title_codes.index(level.levelcode_list[j])]
+            except ValueError:
+                print "ERROR: no longname found for " + level.filename + " in map titles file " + level_title_file + " make sure to run the script with the read titles file argument set to false or write."
+                    
         else:
-            longname = level.longname_list[j]    
+            try:
+                longname = level.longname_list[j]    
+            except IndexError:
+                print "warning no longname found in " + level.filename
+                longname = levelcode
         
+        try:
+            levelshot = level.levelshot_ext_list[j]
+        except IndexError:
+            print "warning missing levelshot for " + level.filename
+            levelshot = ""
+             
+        level.levelcode_list[j]
         
         if level.is_mappack:    
             map_title = longname + "</b> in " + level.filename + "<b>"
-            interim_title = html_level_body.format(map = map_title, comment = "\callvote map " + level.levelcode_list[j], levelshot =level.levelshot_ext_list[j])
+            interim_title = html_level_body.format(map = map_title, comment = "\callvote map " + levelcode, levelshot = levelshot)
         else: 
             map_title = longname
-            interim_title = html_level_body.format(map = map_title, comment = "\callvote map " + level.levelcode_list[j], levelshot =level.levelshot_ext_list[j])    
+            interim_title = html_level_body.format(map = map_title, comment = "\callvote map " + levelcode, levelshot = levelshot)    
             
         menu_obj.write(interim_title)
         if not read_level_titles:
-            level_titles_obj.write(level.levelcode_list[j] + "\t" + level.longname_list[j] + "\n")
+            level_titles_obj.write(levelcode + "\t" + longname + "\n")
+            
+        
         #every second map, i e the right map out of two
         if (i + j) % 2 == 1: 
-            for j in range(num_brs):
+            for k in range(num_brs):
                 menu_obj.write("<br/>")
                 
 #write some extra spacing after the last map
@@ -346,8 +417,15 @@ interim_title = ""
 interim_body = ""
 #loop over the applicable levelshots and generate the body of the html file
 for i in range(0, num_levels, 1):
+    try:
+        comment = level_comments[i]
+    except IndexError:
+        comment = ""   
+        print "warning: missing comment for " + levelname_list[i]
+        
+         
 
-    interim_title = html_level_body.format(map = levelname_list[i], comment = level_comments[i], levelshot = levelshot_list[i])
+    interim_title = html_level_body.format(map = levelname_list[i], comment = comment, levelshot = levelshot_list[i])
     menu_obj.write(interim_title)
         
     if i % 2 == 1 or i == num_levels - 1: #every second map, i e the right map out of two. and last
