@@ -156,46 +156,42 @@ oxodm86	Three Story
 trinity	trinity
 oxodm91	Verticalvengeance for Quake 3
 ztn3tourney1	Blood Run Tournament
-dm121	"Repent"
 
-oxodm121	"Repent"
-
-rota3ctf1	"Iris"
-
+q3w6	q3w6
+q3w7	q3w7
+q3w8	q3w8
+q3wxs3	q3wxs3
+q3wcp18	La Bastir
+q3wcp20	q3wcp20
+q3wcp19	q3wcp19
+q3wcp22	q3wcp22
+q3wcp23	q3wcp23
+q3wcp24	q3wcp24
+q3wcp17	q3wcp17
+q3wcp21	q3wcp21
+quarantine	quarantine
+qzsinister	qzsinister
+ra3map1	ra3map1
+ra3map11	ra3map11
+ra3map2	ra3map2
+oxodm121	Repent
+oxodm121	Repent
+rota3ctf1	Iris
 sanctorium	sanctorium
 siberia	siberia
 silence	silence
-sinister	sinister
-solitude	"Solitude"
-
+solitude	Solitude
 sorrow	sorrow
-storm3tourney8	"Devilish"
-
-oxodm22	"superspace for Quake 3 from Quake Live"
-
-oxodm86	"Three Story"
-
+storm3tourney8	Devilish
+oxodm22	superspace for Quake 3 from Quake Live
+oxodm86	Three Story
+tr1ckhouse-beta3	tr1ckhousebeta3
 trinity	trinity
-oxodm91	"Verticalvengeance for Quake 3"
-
-ztn3tourney1	"Blood Run Tournament"
-
-tn3tourney1	"Blood Run Tournament"
-
-ent"
-
-rota3ctf1	longname    "Iris"
-
-sanctorium	sanctorium
-siberia	siberia
-silence	silence
-sinister	sinister
-solitude	longname        "Solitude"
-
-sorrow	sorrow
-storm3tourney8	longname        "Devilish"
-
-oxodm22	"superspace for Quake 3 from Quake Live"
+oxodm91	Verticalvengeance for Quake 3
+ztn3dm1-ho	Blood Run
+ztn3dm1	Blood Run
+ztn3tourney1	Blood Run Tournament
+"
 
 oxodm86	"Three Story"
 
