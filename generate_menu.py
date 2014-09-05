@@ -7,16 +7,16 @@ import tempfile
 import shutil
 
 from wand.image import Image
-verbose = True
+verbose = False
 
 def convert_image(input_file_path, convert_format):
 
     output_file_path = input_file_path[:input_file_path.rfind('.')] + "." + convert_format
-    if verbose: print output_file_path
+    #if verbose: print output_file_path
     with Image(filename = input_file_path) as img:
-        if verbose: print img.format
+        #if verbose: print img.format
         with img.convert(convert_format) as conv:
-            if verbose: print conv.format
+            #if verbose: print conv.format
             img.save(filename=output_file_path)
             return output_file_path
 
@@ -35,8 +35,9 @@ def is_image(file):
         return True    
 
     else:
-        return False 
-        
+        return False        
+def get_code_from_shot(levelshot):
+    return levelshot.replace("levelshots/", '').replace(".tga", '').replace(".png", '').replace(".JPG", '').replace(".jpg", '').replace("arenashots/", '')        
 def is_non_html_image(file):
     if file.endswith("tga"):
         return True
@@ -66,9 +67,11 @@ class QuakeLevel:
         self.levelcode_list = []
         self.levelshot_int_list = []
         self.levelshot_ext_list = []
+        self.arenashot_list = []
     
     
         self.is_mappack = False
+        self.is_multiarena = False
         
         self.filename_full = os.path.basename(pk3_filepath)
         
@@ -86,9 +89,15 @@ class QuakeLevel:
         content = zipper.namelist()
         if "maplist.txt" in content:
             zipper.getinfo("maplist.txt")
-            if verbose: print str(self.filename) + " is a mappack"
-            if verbose: print ""
             self.is_mappack = True
+        elif "maps.txt" in content:
+            zipper.getinfo("maps.txt")    
+            self.is_mappack = True
+                
+            
+        if verbose and self.is_mappack: print str(self.filename) + " is a mappack"
+        if verbose and self.is_mappack: print "mappack " + self.filename + " contains " + str(self.mapcount) + " maps\n" 
+            
         
         for cont in content:
             #find levelshot: is_image details acceptable image files
@@ -100,35 +109,26 @@ class QuakeLevel:
                 self.levelcode_list.append(cont.replace("maps/", '').replace(".bsp", ''))
                 self.mapcount += 1
                 
-            #fine .arena file with map metadata
+            #find .arena file with map metadata
             elif cont.endswith(".arena"):
                 self.arena_file = cont
                 
+            elif cont.startswith("arenashots") and is_image(cont):
+                self.arenashot_list.append(cont)
+                self.is_multiarena = True    
+                
+
+
+
 
         #at this point all variables should be initilized, parsed from the pk3 file.        
         if self.arena_file == "":
-            if verbose: print "warning no arena file found for"
-            if verbose: print self.filename
-            if verbose: print "longname/s copied from levelcode/s"
-            if verbose: print ""
+            if verbose: print "warning no arena file found for " + self.filename
+            if verbose: print "longname/s copied from levelcode/s\n"
+
             self.longname_list = self.levelcode_list[:]
             
-                    
-                    
-        for levelshot in self.levelshot_int_list:
-            if levelshot != "":
-                zipper.extract(levelshot, levelshot_extract_path)
-                levelshot_file_path = os.path.join(levelshot_extract_path, levelshot)
-                
-                if is_non_html_image(levelshot_file_path):
-                    levelshot_file_path = convert_image(levelshot_file_path, convert_image_format)
-                    if verbose: print self.filename + " converted to " + convert_image_format
-                    
-                if verbose: print levelshot_file_path
-                self.levelshot_ext_list.append(levelshot_file_path)
-                    
-        
-        
+                            
         #extract the .arena file with meta data to a temporary storage to read data from it.
         arena_file_map_code_list = []
         if self.arena_file != "":
@@ -187,19 +187,77 @@ class QuakeLevel:
                         if i < len(self.longname_list):
                             self.longname_list[i] = longname_list_copy[k]
                         else:
-                            self.longname_list.append(longname_list_copy[k])    
+                            self.longname_list.append(longname_list_copy[k])
                     else:
                         if verbose: print "warning: levelcodes from .bsp files in " + self.filename + " do not match longnames parsed from the .arena file."
-                        
 
+
+
+        
+        
+        """
+        apparently the name data was in arena file - scrapping this
+        
+        #attempt to read mapname data from maplist.txt or maps.txt
+        #this 
+        
+        
+        #attempt to read mapname data from individual map .bsp
+        #only do this if there is no chnace to grab longnames 
+        #from arena file - i e there is no .arena file
+        
+        if self.is_mappack and self.arena_file == "":
+            print "attempting to read longnames from .bsp files"
+            for level_code in levelcode_list:
+                levelbsp = append(cont.replace("maps/", '').replace(".bsp", ''))
+                levelbsp_file =  zipper.extract(levelbsp, temporary_file_storage)
+                open(levelbsp_file, 'r')
+        """
+        
+        #if the file is a multiarena, extract all the arenashots
+        #first extracted levelshot is the parent levelshot for the arena map
+        #the follwoing images are arenashots
+        if self.is_multiarena:
+            for arenashot in self.arenashot_list:
+                arenacode = get_code_from_shot(arenashot)
+                self.longname_list.append(arenacode)
+                self.levelcode_list.append(arenacode)
+                self.levelshot_int_list.append(arenashot)
+                self.mapcount += 1
+                
+                
+        
+        
+        #extract levelshots and save the extracted file paths in list levelshot_ext_list
+        for levelshot in self.levelshot_int_list:
+            if levelshot != "":
+                zipper.extract(levelshot, levelshot_extract_path)
+                levelshot_file_path = os.path.join(levelshot_extract_path, levelshot)
+                
+                if is_non_html_image(levelshot_file_path):
+                    levelshot_file_path = convert_image(levelshot_file_path, convert_image_format)
+                    
+                    
+                    
+                #here append    
+                self.levelshot_ext_list.append(levelshot_file_path)
+        #if need be reorder levelshot_ext_list to correspond to levelshot_list's order
+        levelshot_list_copy = self.levelshot_ext_list[:]
+        
+
+        for i, levelshot in enumerate(self.levelshot_int_list):
+            levelshot_code = get_code_from_shot(levelshot)
+            for k in range(len(self.levelcode_list)):
+                if levelshot_code == self.levelcode_list[k]:
+                    self.levelshot_ext_list[k] = levelshot_list_copy[i]
+        
+        """
         if possible_mismatch:
-            if verbose: print "warning possible order mismatch between map name and mapcode + levelshot for"
-            if verbose: print self.filename        
-            if verbose: print ""    
+            if verbose: print "warning possible order mismatch between map name and mapcode + levelshot for " + self.filename +"\n"
+        """       
         
           
         if self.is_mappack:    
-            if verbose: print "mappack " + self.filename + " contains " + str(self.mapcount) + " maps"
             #make sure that all lists are the same length or throw a warning
             if len(self.levelshot_int_list) != self.mapcount:
                 if verbose: print "warning then number of internal levelshots do not match the number of levels"
@@ -210,9 +268,15 @@ class QuakeLevel:
             if len(self.levelcode_list)!= self.mapcount:
                 if verbose: print "warning then number of levelcodes do not match the number of levels"
             
+            print ""
+        
+        #if there are several levelcodes in the map it's probably a mappack
+        if len(self.levelcode_list) > 2: self.is_mappack = True
+        
+        #if multiarena - special special
 
-
-            
+        
+        
         
     def check_if_override(self, levelshot_override_path):
         for i, levelshot in enumerate(self.levelshot_ext_list):
@@ -242,8 +306,8 @@ index_dirr = sys.argv[i]
 i += 1
 
 pk3_dirr = sys.argv[i]
-if verbose: print "found " + str(len(sys.argv)) + " input arguments"
-if verbose: print ""
+if verbose: print "found " + str(len(sys.argv)) + " input arguments\n"
+
 i += 1
 
 
@@ -261,10 +325,11 @@ i += 1
 if len(sys.argv) > i:
     levelshot_override_path = sys.argv[i]
 else:
-    levelshot_override_path = os.path.join(index_dirr, "levelshots/")
-if verbose: print "workind dir is: " + index_dirr    
+    levelshot_override_path = os.path.join(index_dirr, "levelshots/") 
 i += 1
-    
+
+
+read_level_titles = False    
 if len(sys.argv) > i:
     if sys.argv[i] in ["true", "t", "y", "1", "True", "read"]:
         if verbose: print "reading titles file"
@@ -301,11 +366,6 @@ levelshot_extract_path = os.path.join(index_dirr, "images/levels")
 
 menu_html_file = os.path.join(index_dirr, "index.html")
 level_title_file = os.path.join(index_dirr, "level_titles.txt")
-
-comment_file = os.path.join(reqest_level_dirr, "comments.txt")
-comment_obj = open(comment_file, "ra+")
-level_comments = comment_obj.readlines()
-
 
 menu_obj = open(menu_html_file, "w")
 header_obj = open(html_header, "r")
@@ -348,8 +408,7 @@ menu_obj.write(interim_divider)
 pk3_list = glob.glob(pk3_dirr + '/' + '*.pk3')
 
 num_pk3s = len(pk3_list)
-if verbose: print "found " + str(num_pk3s) + " pk3 files"
-if verbose: print "---\n"
+if verbose: print "found " + str(num_pk3s) + " pk3 files \n --- \n"
 level_list = []
 
 #create a list of all levels from .pk3 files and init also extracts the levelshot

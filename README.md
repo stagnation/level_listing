@@ -29,6 +29,7 @@ index-dir
 
 the request folder will be scanned for .jpg files with a levelshot for a requested map that is not currently in the main pk3_dir. any comments saved in comments.txt will be added to the requested map in the list as well as the map name (filename.jpg)
 
+*todo if there is no master .arena file, search for individual .arena files with the map longname
 
 
 DEPENDENCIES:

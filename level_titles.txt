@@ -1,41 +1,59 @@
-almostlost	almostlost
-asylum	asylum
-aty3dm9msc2013	Sector 9 The Cytherean Outpost
-b0_beta6	b0 promode tricking
-b0_beta6	b0 promode tricking
-blackcathedral	blackcathedral
-brickyard	brickyard
-bst3dm1	Terminatria
-canned	Canned heat
-oxodm27	chemicalreaction for Quake 3 from Quake Live
-oxodm31	concretepalace for Quake 3 from Quake Live
-cos1_beta7b	cos1_beta7b
-courage-b8	Mayois Courage
-crescent	Crescent
-ct3dm5	Left Behind
-cure	cure
-oxodm120	Cure for Quake 3
-czg3team1	The Longest Capture
-dc_map02	dc_map02
-dc_map03	dc_map03
-dc_map04	dc_map04
-dc_map05	dc_map05
-dc_map06	dc_map06
-dc_map07	dc_map07
-dc_map08	dc_map08
-dc_map09	dc_map09
-dc_map10	dc_map10
-dc_map11	dc_map11
-dc_map12	dc_map12
-dc_map13	dc_map13
-dc_map14	dc_map14
-dc_map15	dc_map15
-dc_map16	dc_map16
-dc_map17	dc_map17
-dc_map18	dc_map18
-dc_map19	dc_map19
-dc_map20	dc_map20
-dc_map21	dc_map21
+q3wcp7	Dynatron  3W
+q3wcp8	Harsh Grounds  3W
+q3wcp5	Shinning Forces  3W
+q3wcp6	Devolved CTF  3W
+q3wcp4	Schadenfreude 2001  3W
+q3wcp2	Cold Crossings  3W
+q3wcp1	Japanese Castles  3w
+q3wxs1	Harsh Grounds  3W
+q3wcp3	Hot Crossings  3W
+q3wcp1	Silly Shootings
+q3wcp10	Silly Shootings
+q3wcp11	q3wcp11
+q3wcp12	q3wcp12
+q3wcp13	q3wcp13
+q3wcp14	q3wcp14
+q3wcp15	q3wcp15
+q3wcp16	q3wcp16
+q3wcp9	q3wcp9
+q3wxs2	q3wxs2
+q3w1	Silly CTF
+q3w2	Silly CTF
+q3w3	q3w3
+q3w4	q3w4
+q3w5	q3w5
+q3w6	q3w6
+q3w7	q3w7
+q3w8	q3w8
+q3wxs3	q3wxs3
+q3wcp18	La Bastir
+q3wcp20	q3wcp20
+q3wcp19	q3wcp19
+q3wcp22	q3wcp22
+q3wcp23	q3wcp23
+q3wcp24	q3wcp24
+q3wcp17	q3wcp17
+q3wcp21	q3wcp21
+quarantine	quarantine
+qzsinister	qzsinister
+ra3map1	ra3map1
+ra3map1_1	ra3map1_1
+ra3map1_2	ra3map1_2
+ra3map1_3	ra3map1_3
+ra3map1_4	ra3map1_4
+ra3map11	ra3map11
+ra3map11_4	ra3map11_4
+ra3map11_2	ra3map11_2
+ra3map11_3	ra3map11_3
+ra3map11_1	ra3map11_1
+ra3map2	ra3map2
+ra3map2_1	ra3map2_1
+ra3map2_2	ra3map2_2
+ra3map2_3	ra3map2_3
+ra3map2_4	ra3map2_4
+oxodm121	Repent
+solitude	Solitude
+21
 dc_map22	dc_map22
 dc_map23	dc_map23
 dc_map24	dc_map24
@@ -45,12 +63,15 @@ oxodm58a	Delirium
 oxodm33	demonkeep for Quake 3 from Quake Live
 oxodm35	Diesirae for Quake 3 from Quake Live
 oxodm38	Dreadfulplace for Quake 3 from Quake Live
+eigelstein	Eigelstein Pain
+eizdm4-b15	eizdm4-b15
 oxodm40	Electrichead for Quake 3 from Quake Live
 oxodm43	eyetoeye for Quake 3 from Quake Live
 furiousheights	furiousheights
 oxodm73	Fuse for Quake 3
 globulus2	globulus2
 oxodm47	Gothic Rage
+hektik	Hektik
 hiddenfortress	hiddenfortress
 hub3aeroq3	Aerowalk
 hub3dm1	Dismemberment
@@ -64,14 +85,27 @@ leviathan	leviathan
 oxodm62	lostworld for Quake 3 from Quake Live
 oxodm62	lostworld for Quake 3 from Quake Live
 lun3dm5	Lun3DM5
+13camp	The Campgrounds II CTF by sst13
 13circle	Circle Of Death by sst13
+13tomb	Ziggurat Tomb by sst13
+tornado	tornado
 cpm3a	use and abuse by fxrjude swelt remix
 cu3dm1a	cu3dm1a
+DM6XL	DM6XL
+CAMAP2	CAMAP2
+nodm13	The Dark Zone
+nodm19	Blood Run CPM Edition
 oxodm1	dedust2 for quake 3
 oxodm102_b1	Campgrounds Redux Q4DM9
+oxodm120	Cure
+oxodm14	Furious Heights
 oxodm2	Aero Blood Run Remix Blood Run in aero style
+oxodm54	Hidden Fortress
 sorrow	Sorrow
+mbt_dm2	House of the rising sun
+mg_final	Mystic Gemini
 oxodm134	Monastery
+mptourney1	mptourney1
 oxodm63	Namelessplace
 ospdm5a	Deep Inside
 ospca1	American CANCo
@@ -92,10 +126,12 @@ ospdm9	Anticipating Oblivion  Tourney Edition
 overkill	Overkill
 phantq3dm3_rev	Corrosion
 pom_bots	Pyramid Of the Bots
+pro-q3tourney7	Almost Lost
 pukka3tourney2	pukka3tourney2 beta
 pukka3tourney7	Tortured by thefury
 purgatory	purgatory
 q3deck	Deck
+q3dm13t	Lost Space
 q3dmp23	Underdog
 repent	repent
 q3shw24	The Dreadful place
@@ -138,42 +174,22 @@ q3wcp24	q3wcp24
 q3wcp17	q3wcp17
 q3wcp21	q3wcp21
 quarantine	quarantine
-ra3map1	ra3map1
-ra3map11	ra3map11
-ra3map2	ra3map2
-oxodm121	Repent
-oxodm121	Repent
-rota3ctf1	Iris
-sanctorium	sanctorium
-siberia	siberia
-silence	silence
-sinister	sinister
-solitude	Solitude
-sorrow	sorrow
-storm3tourney8	Devilish
-oxodm22	superspace for Quake 3 from Quake Live
-oxodm86	Three Story
-trinity	trinity
-oxodm91	Verticalvengeance for Quake 3
-ztn3tourney1	Blood Run Tournament
-
-q3w6	q3w6
-q3w7	q3w7
-q3w8	q3w8
-q3wxs3	q3wxs3
-q3wcp18	La Bastir
-q3wcp20	q3wcp20
-q3wcp19	q3wcp19
-q3wcp22	q3wcp22
-q3wcp23	q3wcp23
-q3wcp24	q3wcp24
-q3wcp17	q3wcp17
-q3wcp21	q3wcp21
-quarantine	quarantine
 qzsinister	qzsinister
 ra3map1	ra3map1
+ra3map1_1	ra3map1_1
+ra3map1_2	ra3map1_2
+ra3map1_3	ra3map1_3
+ra3map1_4	ra3map1_4
 ra3map11	ra3map11
+ra3map11_4	ra3map11_4
+ra3map11_2	ra3map11_2
+ra3map11_3	ra3map11_3
+ra3map11_1	ra3map11_1
 ra3map2	ra3map2
+ra3map2_1	ra3map2_1
+ra3map2_2	ra3map2_2
+ra3map2_3	ra3map2_3
+ra3map2_4	ra3map2_4
 oxodm121	Repent
 oxodm121	Repent
 rota3ctf1	Iris
@@ -191,12 +207,3 @@ oxodm91	Verticalvengeance for Quake 3
 ztn3dm1-ho	Blood Run
 ztn3dm1	Blood Run
 ztn3tourney1	Blood Run Tournament
-"
-
-oxodm86	"Three Story"
-
-trinity	trinity
-oxodm91	"Verticalvengeance for Quake 3"
-
-ztn3tourney1	longname "Blood Run Tournament"
-
