@@ -1,87 +1,80 @@
-q3wcp7	Dynatron  3W
-q3wcp8	Harsh Grounds  3W
-q3wcp5	Shinning Forces  3W
-q3wcp6	Devolved CTF  3W
-q3wcp4	Schadenfreude 2001  3W
-q3wcp2	Cold Crossings  3W
-q3wcp1	Japanese Castles  3w
-q3wxs1	Harsh Grounds  3W
-q3wcp3	Hot Crossings  3W
-q3wcp1	Silly Shootings
-q3wcp10	Silly Shootings
-q3wcp11	q3wcp11
-q3wcp12	q3wcp12
-q3wcp13	q3wcp13
-q3wcp14	q3wcp14
-q3wcp15	q3wcp15
-q3wcp16	q3wcp16
-q3wcp9	q3wcp9
-q3wxs2	q3wxs2
-q3w1	Silly CTF
-q3w2	Silly CTF
-q3w3	q3w3
-q3w4	q3w4
-q3w5	q3w5
-q3w6	q3w6
-q3w7	q3w7
-q3w8	q3w8
-q3wxs3	q3wxs3
-q3wcp18	La Bastir
-q3wcp20	q3wcp20
-q3wcp19	q3wcp19
-q3wcp22	q3wcp22
-q3wcp23	q3wcp23
-q3wcp24	q3wcp24
-q3wcp17	q3wcp17
-q3wcp21	q3wcp21
-quarantine	quarantine
-qzsinister	qzsinister
-ra3map1	ra3map1
-ra3map1_1	ra3map1_1
-ra3map1_2	ra3map1_2
-ra3map1_3	ra3map1_3
-ra3map1_4	ra3map1_4
-ra3map11	ra3map11
-ra3map11_4	ra3map11_4
-ra3map11_2	ra3map11_2
-ra3map11_3	ra3map11_3
-ra3map11_1	ra3map11_1
-ra3map2	ra3map2
-ra3map2_1	ra3map2_1
-ra3map2_2	ra3map2_2
-ra3map2_3	ra3map2_3
-ra3map2_4	ra3map2_4
-oxodm121	Repent
-solitude	Solitude
-21
-dc_map22	dc_map22
-dc_map23	dc_map23
-dc_map24	dc_map24
-oxodm32	deepinside for Quake 3 from Quake Live
-oxodm58	Delirium OLD
-oxodm58a	Delirium
-oxodm33	demonkeep for Quake 3 from Quake Live
-oxodm35	Diesirae for Quake 3 from Quake Live
-oxodm38	Dreadfulplace for Quake 3 from Quake Live
-eigelstein	Eigelstein Pain
-eizdm4-b15	eizdm4-b15
-oxodm40	Electrichead for Quake 3 from Quake Live
-oxodm43	eyetoeye for Quake 3 from Quake Live
-furiousheights	furiousheights
-oxodm73	Fuse for Quake 3
-globulus2	globulus2
-oxodm47	Gothic Rage
-hektik	Hektik
-hiddenfortress	hiddenfortress
-hub3aeroq3	Aerowalk
-hub3dm1	Dismemberment
-oxodm57	Intervention
-ironworks	ironworks
-jul2c	No more games
-jvr3ctf1	The Broken Bricks
-krctf01	Mazeeur
-oxodm105	Left Behind for Quake 3 from Quake Live
-leviathan	leviathan
+cpm10	Use of Weapons
+cpm11	tribute to n1dK
+cpm11a	Tribute to Don King
+cpm12	Dismemberment
+cpm13	Abusive Intentions
+cpm14	last fortress badlands edition
+cpm15	patibuhs lair
+cpm16	Iron Lung
+cpm17	Shaft Area 22  By AciD
+cpm18	PowaHaus
+cpm18r	powahaus redux
+cpm19	cpm19
+cpm1a	Wicked
+cpm2	Coitus Interuptus
+cpm20	winter chill
+cpm21	Foolish Legacy
+cpm22	Aerowalk Hubsters Remix II
+cpm23	Pull Your Socks Up
+cpm24	phrantic
+cpm25	ptolemys wrath
+cpm26	Out of the Dark CTFNTF
+cpmctf4	Out of the Dark CTFNTF
+cpm27	inspired
+cpm28	unbalanced
+cpm29	solid
+cpm3	Use and Abuse
+cpm3a	use and abuse by fxrjude swelt remix
+cpm4	Realm of Steel Rats
+cpm4a	Realm of Steel Rats
+cpm5	Pro Mode despiiise tmcentaura
+cpm6	Prophecy
+cpm7	Old School
+cpm8	Clowning Around
+cpm9	No Class
+cpma3	UberArena
+cpmctf1	Second Stab
+cpmctf2	GothicBlock  wwwninemilcom
+cpmctf3	Draconian Measures  wwwninemilcom
+cpmctf5	fun fun fun
+q3ctf1	Dueling Keeps
+q3ctf2	Troubled Waters
+q3ctf3	The Stronghold
+q3ctf4	Space CTF
+q3dm0	Introduction
+q3dm1	Arena Gate
+q3dm10	The Nameless Place
+q3dm11	Deva Station
+q3dm12	The Dredwerkz
+q3dm13	Lost World
+q3dm14	Grim Dungeons
+q3dm15	Demon Keep
+q3dm16	The Bouncy Map
+q3dm17	The Longest Yard
+q3dm18	Space Chamber
+q3dm19	Apocalypse Void
+q3dm2	House Of Pain
+q3dm3	Arena Of Death
+q3dm4	The Place Of Many Deaths
+q3dm5	The Forgotten Place
+q3dm6	The Camping Grounds
+q3dm7	Temple of Retribution
+q3dm8	Brimstone Abbey
+q3dm9	Heros Keep
+q3tourney1	Powerstation 0218
+q3tourney2	The Proving Grounds
+q3tourney3	Hells Gate
+q3tourney4	Vertical Vengeance
+q3tourney5	Fatal Instinct
+q3tourney6	The Very End Of You
+test_bigbox	test_bigbox
+q3dm9	Across Space
+q3tourney6_ctf	Across Space
+pro-q3dm13	Lost World II
+pro-q3dm6	The Campgrounds II
+pro-q3tourney2	The Proving Grounds II
+pro-q3tourney4	Vertical Vengeance II
+iathan
 oxodm62	lostworld for Quake 3 from Quake Live
 oxodm62	lostworld for Quake 3 from Quake Live
 lun3dm5	Lun3DM5
@@ -147,7 +140,7 @@ q3wcp1	Japanese Castles  3w
 q3wxs1	Harsh Grounds  3W
 q3wcp3	Hot Crossings  3W
 q3wcp1	Silly Shootings
-q3wcp10	Silly Shootings
+q3wcp10	q3wcp10
 q3wcp11	q3wcp11
 q3wcp12	q3wcp12
 q3wcp13	q3wcp13
@@ -155,16 +148,16 @@ q3wcp14	q3wcp14
 q3wcp15	q3wcp15
 q3wcp16	q3wcp16
 q3wcp9	q3wcp9
-q3wxs2	q3wxs2
+q3wxs2	Silly Shootings
 q3w1	Silly CTF
-q3w2	Silly CTF
+q3w2	q3w2
 q3w3	q3w3
 q3w4	q3w4
 q3w5	q3w5
 q3w6	q3w6
 q3w7	q3w7
 q3w8	q3w8
-q3wxs3	q3wxs3
+q3wxs3	Silly CTF
 q3wcp18	La Bastir
 q3wcp20	q3wcp20
 q3wcp19	q3wcp19
@@ -204,6 +197,6 @@ oxodm86	Three Story
 tr1ckhouse-beta3	tr1ckhousebeta3
 trinity	trinity
 oxodm91	Verticalvengeance for Quake 3
-ztn3dm1-ho	Blood Run
+ztn3dm1-ho	Blood Run High Octane
 ztn3dm1	Blood Run
 ztn3tourney1	Blood Run Tournament

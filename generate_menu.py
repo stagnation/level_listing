@@ -112,14 +112,18 @@ class QuakeLevel:
             #find .arena file with map metadata
             elif cont.endswith(".arena"):
                 self.arena_file = cont
+            elif cont.endswith("arenas.txt"):
+                self.arena_file = cont    
                 
             elif cont.startswith("arenashots") and is_image(cont):
                 self.arenashot_list.append(cont)
-                self.is_multiarena = True    
+                self.is_multiarena = True
+                self.is_mappack = True
                 
 
 
-
+        #if there are several levelcodes in the map it's probably a mappack
+        if len(self.levelcode_list) >= 2: self.is_mappack = True
 
         #at this point all variables should be initilized, parsed from the pk3 file.        
         if self.arena_file == "":
@@ -146,53 +150,26 @@ class QuakeLevel:
                     
                      
                      
-                    mapcode = re.sub('[^0-9a-zA-Z]+', '', mapcode)
+                    mapcode = re.sub('[^0-9a-zA-Z]+', '', mapcode)#need to remove needless characters.
                     arena_file_map_code_list.append(mapcode)
-                
-                
-        #rearrange longname list to be in the same order as the other lists by comparing
-        #the given mapcode in the arena file to the levelcode list (which is ordered 
-        #in the same fashion as levelist)    
+
         
-           
-        #levelcode list is sorted like 1 10 11 2 3 4 ...
-        #arena_file_map_code_list is sorted like 1 2 3 4 ... 10 11
-        
-        
-        longname_list_copy = self.longname_list[:]
-        possible_mismatch = False
+        #new algorithm to get the correct longname for a levelcode in a mappack
+
+        if self.is_mappack:
+            if len(self.levelcode_list) > len(self.longname_list):
+               for i in range(len(self.levelcode_list) - len(self.longname_list)):
+                   self.longname_list.append("")
+                   
+                   
+            longname_list_copy = self.longname_list[:]
+            for i, levelcode in enumerate(self.levelcode_list):
+                for k in range(len(arena_file_map_code_list)):
+                    level_c = re.sub('[^0-9a-zA-Z]+', '', levelcode.lower()) #strip chars and lower
+                    a_level_c = re.sub('[^0-9a-zA-Z]+', '', arena_file_map_code_list[k].lower()) #strip chars and lower
+                    if level_c == a_level_c:
+                        self.longname_list[i] = longname_list_copy[k]
                     
-        if self.arena_file != "":
-            for i, mapcode in enumerate(self.levelcode_list):
-                if i >= len(arena_file_map_code_list):
-                    #if not all maps are listed in the arena file
-                    #should still be able to work with the index lookup
-                    if verbose: print "warning: not all maps are listed in the arena file of " + self.filename
-                    possible_mismatch = True
-                    #find the index in levelcode_list that corresponds to the given arena_file
-                    if mapcode in arena_file_map_code_list:
-                        k = arena_file_map_code_list.index(mapcode)
-                        if i < len(self.longname_list):
-                            self.longname_list[i] = longname_list_copy[k]
-                        else:
-                            self.longname_list.append(longname_list_copy[k])
-                    else:
-                        if verbose: print "warning: levelcodes from .bsp files in " + self.filename + " do not match longnames parsed from the .arena file."
-                        
-                elif self.levelcode_list[i] != arena_file_map_code_list[i]:
-                    possible_mismatch = True
-                    #find the index in levelcode_list that corresponds to the given arena_file
-                    if mapcode in arena_file_map_code_list:
-                        k = arena_file_map_code_list.index(mapcode)
-                        if i < len(self.longname_list):
-                            self.longname_list[i] = longname_list_copy[k]
-                        else:
-                            self.longname_list.append(longname_list_copy[k])
-                    else:
-                        if verbose: print "warning: levelcodes from .bsp files in " + self.filename + " do not match longnames parsed from the .arena file."
-
-
-
         
         
         """
@@ -241,20 +218,24 @@ class QuakeLevel:
                     
                 #here append    
                 self.levelshot_ext_list.append(levelshot_file_path)
+                
+                
         #if need be reorder levelshot_ext_list to correspond to levelshot_list's order
         levelshot_list_copy = self.levelshot_ext_list[:]
         
-
+        if len(self.levelcode_list) > len(self.levelshot_ext_list):
+            for i in range(len(self.levelcode_list) - len(self.levelshot_ext_list)):
+                self.levelshot_ext_list.append("")
+            
         for i, levelshot in enumerate(self.levelshot_int_list):
             levelshot_code = get_code_from_shot(levelshot)
             for k in range(len(self.levelcode_list)):
-                if levelshot_code == self.levelcode_list[k]:
-                    self.levelshot_ext_list[k] = levelshot_list_copy[i]
+                levelshot_c = re.sub('[^0-9a-zA-Z]+', '', levelshot_code.lower()) #strip chars and lower
+                self_levelc = re.sub('[^0-9a-zA-Z]+', '', self.levelcode_list[k].lower())
+                if levelshot_c == self_levelc:
+                    self.levelshot_ext_list[k] = levelshot_list_copy[i]   
         
-        """
-        if possible_mismatch:
-            if verbose: print "warning possible order mismatch between map name and mapcode + levelshot for " + self.filename +"\n"
-        """       
+
         
           
         if self.is_mappack:    
@@ -269,12 +250,12 @@ class QuakeLevel:
                 if verbose: print "warning then number of levelcodes do not match the number of levels"
             
             print ""
+            
+        if len(self.longname_list) <= len(self.levelcode_list):  
+            for i in range(len(self.longname_list)):
+                if self.longname_list[i] == "":
+                    self.longname_list[i] = self.levelcode_list[i]
         
-        #if there are several levelcodes in the map it's probably a mappack
-        if len(self.levelcode_list) > 2: self.is_mappack = True
-        
-        #if multiarena - special special
-
         
         
         
@@ -295,6 +276,8 @@ class QuakeLevel:
                     
                 else:
                     return False    
+                    
+                    
                     
         
         
