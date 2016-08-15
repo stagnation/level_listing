@@ -2,6 +2,8 @@
 *.jpg
 .DS_Store
 menu.html
+index.html
+level_titles.txt
 images/quake/*
 *.bsp
 *.png
