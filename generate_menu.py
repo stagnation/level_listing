@@ -1,3 +1,4 @@
+from __future__ import print_function
 import zipfile
 import glob
 import sys
@@ -7,24 +8,24 @@ import tempfile
 import shutil
 import argparse
 
+
 from wand.image import Image
-verbose = False
 
 # TODO(nils): overhaul all verbose printing
 # TODO(nils): overhaul QuakeLevel class
-# TODO(nils): many html resource paths are spliced with outputdir, change that to "."
 
-class html_object:
+
+class dummy_class:
     pass
 
 
 def convert_image(input_file_path, convert_format):
     output_file_path = input_file_path[:input_file_path.rfind('.')] + "." + convert_format
-    #if verbose: print output_file_path
+    #if settings['verbose']: print(output_file_path)
     with Image(filename = input_file_path) as img:
-        #if verbose: print img.format
+        #if settings['verbose']: print(img.format)
         with img.convert(convert_format) as conv:
-            #if verbose: print conv.format
+            #if settings['verbose']: print(conv.format)
             img.save(filename=output_file_path)
             return output_file_path
 
@@ -94,10 +95,6 @@ class QuakeLevel:
             zipper.getinfo("maps.txt")
             self.is_mappack = True
 
-        # if verbose and self.is_mappack:
-        #     print str(self.filename) + " is a mappack"
-        # if verbose and self.is_mappack:
-        #     print "mappack " + self.filename + " contains " + str(self.mapcount) + " maps\n"
 
         for cont in zip_content:
             #find levelshot: is_image details acceptable image files
@@ -120,13 +117,20 @@ class QuakeLevel:
                 self.is_multiarena = True
                 self.is_mappack = True
 
+
         #if there are several levelcodes in the map it's probably a mappack
-        if len(self.levelcode_list) >= 2: self.is_mappack = True
+        if len(self.levelcode_list) >= 2:
+            self.is_mappack = True
+
+        if settings['verbose'] and self.is_mappack:
+            print(self.filename, "is a mappack and contains ", str(self.mapcount), " maps")
 
         #at this point all variables should be initilized, parsed from the pk3 file.
         if self.arena_file == "":
-            if verbose: print "warning no arena file found for " + self.filename
-            if verbose: print "longname/s copied from levelcode/s\n"
+            if settings['verbose']:
+                print("warning no arena file found for " + self.filename)
+            if settings['verbose']:
+                print("longname/s copied from levelcode/s\n")
 
             self.longname_list = self.levelcode_list[:]
 
@@ -205,20 +209,25 @@ class QuakeLevel:
         if self.is_mappack:
             #make sure that all lists are the same length or throw a warning
             if len(self.levelshot_int_list) != self.mapcount:
-                if verbose: print "warning then number of internal levelshots do not match the number of levels"
+                if settings['verbose']:
+                    print("warning the number of internal levelshots do not match the number of levels")
             if len(self.levelshot_ext_list) != self.mapcount:
-                if verbose: print "warning then number of external levelsohts do not match the number of levels"
+                if settings['verbose']:
+                    print("warning the number of external levelsohts do not match the number of levels")
             if len(self.longname_list) != self.mapcount:
-                if verbose: print "warning then number of longnames do not match the number of levels"
+                if settings['verbose']:
+                    print("warning the number of longnames do not match the number of levels")
             if len(self.levelcode_list)!= self.mapcount:
-                if verbose: print "warning then number of levelcodes do not match the number of levels"
-
-            print ""
+                if settings['verbose']:
+                    print("warning the number of levelcodes do not match the number of levels")
 
         if len(self.longname_list) <= len(self.levelcode_list):
             for i in range(len(self.longname_list)):
                 if self.longname_list[i] == "":
                     self.longname_list[i] = self.levelcode_list[i]
+
+
+#####################
 
 
 def parse_input_args(arguments):
@@ -228,70 +237,39 @@ def parse_input_args(arguments):
 
     parser.add_argument('-v', '--verbose',
             help = "verbose output",
-            default = False)
+            action = "store_true")
 
     parser.add_argument('--output-dir',
             help = "output directoru",
-            default = ".") # NB(nils) ./ ?
+            default = ".")
 
     parser.add_argument('--input-dir',
             help = "input directory with pk3 files",
             default = ".")
 
-    parser.add_argument('--read-level_titles',
-            help = "?",
-            default = False)
-
     parser.add_argument('--levelshot-extract-path',
-            help = "?",
+            help = "path where levelshots should be extracted",
             default = "images/levels")
 
+    parser.add_argument('--temp-dir',
+            help = "temporary directory to extract level data",
+            default=tempfile.mkdtemp())
+
     settings = parser.parse_args()
-    print(settings)
     settings = vars(settings) # convert to dictionary
-    print(settings)
+    settings['resource_path'] = os.path.dirname(os.path.realpath(__file__))
+    if settings['verbose']:
+        print(settings)
 
     return settings
 
 
-# def old_initialize_html_document(settings):
-#     # NB(nils): use argparse library for this
-#     fileformat = '.jpg'
-
-#     reqest_level_dirr = os.path.join(settings['output_dir'], "images/quake/request/")
-#     html_header_path = os.path.join(settings['output_dir'], "html_header.html")
-
-#     level_title_file = os.path.join(settings['output_dir'], "level_titles.txt")
-#     level_titles_obj = open(level_title_file, "r+")
-
-#     output_obj = open(output_file, "w")
-#     header_obj = open(html_header_path, "r")
-
-#     if settings['read_level_titles']:
-#         read_title_lines = level_titles_obj.readlines()
-#         read_title_codes = read_title_lines[:]
-#         read_title_names = read_title_lines[:]
-
-#         for i, line in enumerate(read_title_lines):
-
-#             split_index = line.find("\t")
-#             read_title_codes[i] = line[:split_index]
-#             read_title_names[i] = line[split_index + 1:]
-#     else:
-#         read_title_codes = []
-#         read_title_names = []
-
-#     header = header_obj.read()
-
-#     return res
-
-
 def initialize_output_document(settings, snippets):
-    html_header_path = os.path.join(settings['output_dir'], "html_header.html")
+    html_header_path = os.path.join(settings['resource_path'], "html_header.html")
     header_obj = open(html_header_path, "r")
     header = header_obj.read()
 
-    output_obj = html_object()
+    output_obj = dummy_class()
     output_obj.path = os.path.join(settings['output_dir'], "index.html")
 
     output_obj.text = open(output_obj.path, "w")
@@ -299,7 +277,7 @@ def initialize_output_document(settings, snippets):
     output_obj.text.write(header)
 
     divider = snippets['divider_title'].format(
-            image = os.path.join(settings['output_dir'], "images/online_icon.png"),
+            image = os.path.join(settings['resource_path'], "images/online_icon.png"),
             title = "kartor att spela", line1 = "dessa finns och spelas med angivet kommand", line2 = "")
 
     output_obj.text.write(divider)
@@ -311,36 +289,43 @@ def create_level_list(pk3_list, settings):
     level_list = []
 
     for pk3 in pk3_list:
+
+        if settings['verbose']:
+            print("creating level list from {}".format(pk3))
+
         level = QuakeLevel()
         try:
-            level.init(pk3, settings, temporary_file_dir)
+            level.init(pk3, settings, settings['temp_dir'])
 
             level_list.append(level)
         except zipfile.BadZipfile:
-            if verbose: print pk3 + " is not a valid pk3 file, skipping"
+            if settings['verbose']:
+                print( pk3 + " is not a valid pk3 file, skipping")
 
     return level_list
 
 
-def generate_map_obj_from_level_list(level_list):
+def generate_map_obj_from_level_list(level_list, settings):
     map_list = []
     for level in level_list:
         num_maps = level.mapcount
 
         for j in range(num_maps):
-            map_obj = html_object()
+            map_obj = dummy_class()
             map_obj.levelcode = level.levelcode_list[j]
 
             if j < len(level.longname_list):
                 map_obj.longname = level.longname_list[j]
             else:
-                if verbose: print "warning no longname found in " + level.filename
+                if settings['verbose']:
+                    print("warning no longname found in " + level.filename)
                 map_obj.longname = map_obj.levelcode
 
             if j < len(level.levelshot_ext_list):
                 map_obj.levelshot = level.levelshot_ext_list[j]
             else:
-                if verbose: print "warning missing levelshot for " + level.filename
+                if settings['verbose']:
+                    print("warning missing levelshot for " + level.filename)
                 map_obj.levelshot = ""
 
             if level.is_mappack:
@@ -357,15 +342,16 @@ def write_maps_to_output(output_obj, settings, snippets):
     num_brs = 21 #number of html line break tags needed between rows of floating "level containers"-divs
     pk3_list = glob.glob(settings['input_dir'] + '/' + '*.pk3')
 
-    if verbose: print "found " + str(num_pk3s) + " pk3 files \n --- \n"
-
     level_list = create_level_list(pk3_list, settings)
 
     # level_title_file = os.path.join(settings['output_dir'], "level_titles.txt")
     # level_titles_obj = open(level_title_file, "r+")
 
-    map_list = generate_map_obj_from_level_list(level_list)
+    map_list = generate_map_obj_from_level_list(level_list, settings)
     num_pk3s = len(pk3_list)
+
+    if settings['verbose']:
+        print("found " + str(num_pk3s) + " pk3 files \n")
 
     # NB(nils): if longnames are to be overwritten do it here
     # NB(nils): if levelshots are to be overwritten do it here
@@ -376,11 +362,6 @@ def write_maps_to_output(output_obj, settings, snippets):
                     map = map_obj.title,
                     comment = "\callvote map " + map_obj.levelcode,
                     levelshot = map_obj.levelshot)
-
-            output_obj.text.write(interim_title)
-            # if not settings['read_level_titles']:
-            #     level_titles_obj.write(
-            #             map_obj.levelcode + "\t" + map_obj.longname + "\n")
 
             #every second map, i e the right map out of two
             if map_index % 2 != 0:
@@ -396,21 +377,21 @@ def write_output_footer(output_obj, settings):
     for j in range(2*num_brs):
         output_obj.text.write("<br/>")
 
-    html_footer_path = os.path.join(settings['output_dir'], "html_footer.html")
+    html_footer_path = os.path.join(settings['resource_path'], "html_footer.html")
     footer_obj = open(html_footer_path, "r")
     footer = footer_obj.read()
     output_obj.text.write(footer)
     return output_obj
 
 
-def construct_html_snippets():
+def construct_html_snippets(settings):
     snippets = {}
 
-    html_divider_title_path = os.path.join(settings['output_dir'], "html_divider_title.html")
+    html_divider_title_path = os.path.join(settings['resource_path'], "html_divider_title.html")
     html_divider_title = open(html_divider_title_path, 'r').read()
     snippets['divider_title'] = html_divider_title
 
-    html_level_body_path = os.path.join(settings['output_dir'], "html_level_body.html")
+    html_level_body_path = os.path.join(settings['resource_path'], "html_level_body.html")
     html_level_body = open(html_level_body_path, 'r').read()
     snippets['level_body'] = html_level_body
 
@@ -418,12 +399,8 @@ def construct_html_snippets():
 
 
 if __name__ == '__main__':
-    print(sys.argv)
-
     settings = parse_input_args(sys.argv)
-    snippets = construct_html_snippets()
-
-    temporary_file_dir = tempfile.mkdtemp()
+    snippets = construct_html_snippets(settings)
 
     output_obj = initialize_output_document(settings, snippets)
 
