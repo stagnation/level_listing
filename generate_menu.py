@@ -9,6 +9,8 @@ import shutil
 from wand.image import Image
 verbose = False
 
+# TODO(nils): overhaul all verbose printing
+# TODO(nils): overhaul QuakeLevel class
 
 class html_object:
     pass
@@ -374,63 +376,69 @@ def create_level_list(pk3_list, settings):
     return level_list
 
 
+def generate_map_obj_from_level_list(level_list):
+    map_list = []
+    for level in level_list:
+        num_maps = level.mapcount
+
+        for j in range(num_maps):
+            map_obj = html_object()
+            map_obj.levelcode = level.levelcode_list[j]
+
+            if j < len(level.longname_list):
+                map_obj.longname = level.longname_list[j]
+            else:
+                if verbose: print "warning no longname found in " + level.filename
+                map_obj.longname = map_obj.levelcode
+
+            if j < len(level.levelshot_ext_list):
+                map_obj.levelshot = level.levelshot_ext_list[j]
+            else:
+                if verbose: print "warning missing levelshot for " + level.filename
+                map_obj.levelshot = ""
+
+            if level.is_mappack:
+                map_obj.title = map_obj.longname + "</b> in " + level.filename + "<b>"
+            else:
+                map_obj.title = map_obj.longname
+
+            map_list.append(map_obj)
+
+    return map_list
+
+
 def write_maps_to_output(output_obj, settings, snippets):
     num_brs = 21 #number of html line break tags needed between rows of floating "level containers"-divs
     pk3_list = glob.glob(settings['pk3_dirr'] + '/' + '*.pk3')
 
-    num_pk3s = len(pk3_list)
-
-    level_title_file = os.path.join(settings['index_dirr'], "level_titles.txt")
-    level_titles_obj = open(level_title_file, "r+")
-
     if verbose: print "found " + str(num_pk3s) + " pk3 files \n --- \n"
+
     level_list = create_level_list(pk3_list, settings)
 
+    # level_title_file = os.path.join(settings['index_dirr'], "level_titles.txt")
+    # level_titles_obj = open(level_title_file, "r+")
 
+    map_list = generate_map_obj_from_level_list(level_list)
+    num_pk3s = len(pk3_list)
+
+    #NB(nils): if long names are to be overwritten do it here
+
+    # write
     mapcount = 0
-    for (i, level) in enumerate(level_list):
-        num_maps = level.mapcount
-        for j in range(num_maps):
-            levelcode = level.levelcode_list[j]
-
-            if settings['read_level_titles']:
-
-                if levelcode in read_title_codes:
-                    longname = read_title_names[read_title_codes.index(level.levelcode_list[j])]
-                else:
-                    if verbose: print "ERROR: no longname found for " + level.filename + " in map titles file " + level_title_file + " make sure to run the script with the read titles file argument set to false or write."
-
-            else:
-                if j < len(level.longname_list):
-                    longname = level.longname_list[j]
-                else:
-                    if verbose: print "warning no longname found in " + level.filename
-                    longname = levelcode
-
-            if j < len(level.levelshot_ext_list):
-                levelshot = level.levelshot_ext_list[j]
-            else:
-                if verbose: print "warning missing levelshot for " + level.filename
-                levelshot = ""
-
-            if level.is_mappack:
-                map_title = longname + "</b> in " + level.filename + "<b>"
-            else:
-                map_title = longname
-
+    for (map_index, map_obj) in enumerate(map_list):
+            
             interim_title = snippets['level_body'].format(
-                    map = map_title, comment = "\callvote map " + levelcode, levelshot = levelshot)
-
-            mapcount += 1
-
-            # write
+                    map = map_obj.title,
+                    comment = "\callvote map " + map_obj.levelcode,
+                    levelshot = map_obj.levelshot)
             
             output_obj.text.write(interim_title)
-            if not settings['read_level_titles']:
-                level_titles_obj.write(levelcode + "\t" + longname + "\n")
+            # if not settings['read_level_titles']:
+            #     level_titles_obj.write(
+            #             map_obj.levelcode + "\t" + map_obj.longname + "\n")
 
             #every second map, i e the right map out of two
-            if mapcount % 2 == 0:
+            if map_index % 2 != 0:
                 for k in range(num_brs):
                     output_obj.text.write("<br/>")
 
@@ -478,5 +486,5 @@ if __name__ == '__main__':
 
     output_obj = write_output_footer(output_obj, settings)
 
-
+    # all open files are closed as the program terminates
 
