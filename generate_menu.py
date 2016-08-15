@@ -55,7 +55,7 @@ def is_non_html_image(file):
 
 class QuakeLevel:
 
-    def init(self, pk3_filepath, levelshot_extract_path, temporary_file_storage):
+    def init(self, pk3_filepath, settings, temporary_file_storage):
 
         self.arena_file = ""
 
@@ -206,8 +206,8 @@ class QuakeLevel:
         #extract levelshots and save the extracted file paths in list levelshot_ext_list
         for levelshot in self.levelshot_int_list:
             if levelshot != "":
-                zipper.extract(levelshot, levelshot_extract_path)
-                levelshot_file_path = os.path.join(levelshot_extract_path, levelshot)
+                zipper.extract(levelshot, settings['levelshot_extract_path'])
+                levelshot_file_path = os.path.join(settings['levelshot_extract_path'], levelshot)
 
                 if is_non_html_image(levelshot_file_path):
                     levelshot_file_path = convert_image(levelshot_file_path, convert_image_format)
@@ -308,42 +308,32 @@ def parse_input_args(arguments):
 
     if verbose: print "---\n"
 
+    levelshot_extract_path = os.path.join(index_dirr, "images/levels")
+
     settings = {}
     settings['index_dirr'] = index_dirr
     settings['pk3_dirr'] = pk3_dirr
     settings['levelshot_override_path'] = levelshot_override_path
     settings['read_level_titles'] = read_level_titles
+    settings['levelshot_extract_path'] = levelshot_extract_path
     return settings
 
 
-###############################
-#initializations and paths
-#open and read from static html files
-
-if __name__ == '__main__':
-    print(sys.argv)
-    settings = parse_input_args(sys.argv)
-    temporary_file_dir = tempfile.mkdtemp()
-
-
+def old_initialize_html_document(settings):
+    # NB(nils): use argparse library for this
     fileformat = '.jpg'
+
     reqest_level_dirr = os.path.join(settings['index_dirr'], "images/quake/request/")
-    html_header = os.path.join(settings['index_dirr'], "html_header.html")
-    html_footer = os.path.join(settings['index_dirr'], "html_footer.html")
-    html_level_body_path = os.path.join(settings['index_dirr'], "html_level_body.html")
-    html_level_body = open(html_level_body_path, 'r').read()
-    html_divider_title_path = os.path.join(settings['index_dirr'], "html_divider_title.html")
-    html_divider_title = open(html_divider_title_path, 'r').read()
+    html_header_path = os.path.join(settings['index_dirr'], "html_header.html")
 
-    levelshot_extract_path = os.path.join(settings['index_dirr'], "images/levels")
 
-    menu_html_file = os.path.join(settings['index_dirr'], "index.html")
+
+    output_file = os.path.join(settings['index_dirr'], "index.html")
     level_title_file = os.path.join(settings['index_dirr'], "level_titles.txt")
-
-    menu_obj = open(menu_html_file, "w")
-    header_obj = open(html_header, "r")
-    footer_obj = open(html_footer, "r")
     level_titles_obj = open(level_title_file, "r+")
+
+    output_obj = open(output_file, "w")
+    header_obj = open(html_header_path, "r")
 
     if settings['read_level_titles']:
         read_title_lines = level_titles_obj.readlines()
@@ -360,22 +350,48 @@ if __name__ == '__main__':
         read_title_names = []
 
     header = header_obj.read()
-    footer = footer_obj.read()
 
+    return res
+
+
+class html_object:
+    pass
+
+
+def initialize_output_document(settings):
+    html_header_path = os.path.join(settings['index_dirr'], "html_header.html")
+    header_obj = open(html_header_path, "r")
+    header = header_obj.read()
+
+    output_obj = html_object()
+    output_obj.path = os.path.join(settings['index_dirr'], "index.html")
+
+    output_obj.text = open(output_obj.path, "w")
+
+    output_obj.text.write(header)
+
+    html_divider_title_path = os.path.join(settings['index_dirr'], "html_divider_title.html")
+    html_divider_title = open(html_divider_title_path, 'r').read()
+    interim_divider = html_divider_title.format(
+            image = os.path.join(settings['index_dirr'], "images/online_icon.png"),
+            title = "kartor att spela", line1 = "dessa finns och spelas med angivet kommand", line2 = "")
+
+    output_obj.text.write(interim_divider) # NB(nils): byt detta namn
+    return output_obj
+
+
+def write_maps_to_output(output_obj, settings):
     num_brs = 21 #number of html line break tags needed between rows of floating "level containers"-divs
-
-    ####################
-    #LEVELS ON SERVER
-    #parse data from .pk3 file
-    ####################
-
-    menu_obj.write(header)
-    interim_divider = html_divider_title.format(image = os.path.join(settings['index_dirr'], "images/online_icon.png"), title = "kartor att spela", line1 = "dessa finns och spelas med angivet kommand", line2 = "")
-    menu_obj.write(interim_divider)
-
     pk3_list = glob.glob(settings['pk3_dirr'] + '/' + '*.pk3')
 
+    html_level_body_path = os.path.join(settings['index_dirr'], "html_level_body.html")
+    html_level_body = open(html_level_body_path, 'r').read()
     num_pk3s = len(pk3_list)
+
+    output_file = os.path.join(settings['index_dirr'], "index.html")
+    level_title_file = os.path.join(settings['index_dirr'], "level_titles.txt")
+    level_titles_obj = open(level_title_file, "r+")
+
     if verbose: print "found " + str(num_pk3s) + " pk3 files \n --- \n"
     level_list = []
 
@@ -383,7 +399,7 @@ if __name__ == '__main__':
     for pk3 in pk3_list:
         level = QuakeLevel()
         try:
-            level.init(pk3, levelshot_extract_path, temporary_file_dir)
+            level.init(pk3, settings, temporary_file_dir)
             level.check_if_override(settings['levelshot_override_path'])
 
             level_list.append(level)
@@ -433,7 +449,7 @@ if __name__ == '__main__':
                 interim_title = html_level_body.format(map = map_title, comment = "\callvote map " + levelcode, levelshot = levelshot)
                 mapcount += 1
 
-            menu_obj.write(interim_title)
+            output_obj.text.write(interim_title)
             if not settings['read_level_titles']:
                 level_titles_obj.write(levelcode + "\t" + longname + "\n")
 
@@ -442,10 +458,34 @@ if __name__ == '__main__':
             #if (i + j) % 2 == 1:
             if mapcount % 2 == 0:
                 for k in range(num_brs):
-                    menu_obj.write("<br/>")
+                    output_obj.text.write("<br/>")
 
+    return output_obj
+
+
+def write_output_footer(output_obj, settings):
     #write some extra spacing after the last map
+    num_brs = 21 #number of html line break tags needed between rows of floating "level containers"-divs
     for j in range(2*num_brs):
-        menu_obj.write("<br/>")
+        output_obj.text.write("<br/>")
+
+    html_footer_path = os.path.join(settings['index_dirr'], "html_footer.html")
+    footer_obj = open(html_footer_path, "r")
+    footer = footer_obj.read()
+    output_obj.text.write(footer)
+    return output_obj
+
+
+if __name__ == '__main__':
+    print(sys.argv)
+    settings = parse_input_args(sys.argv)
+    temporary_file_dir = tempfile.mkdtemp()
+
+    output_obj = initialize_output_document(settings)
+
+    output_obj = write_maps_to_output(output_obj, settings)
+
+    output_obj = write_output_footer(output_obj, settings)
+
 
 
