@@ -1,3 +1,4 @@
+#!/usr/bin/python2
 from __future__ import print_function
 import zipfile
 import glob
@@ -231,7 +232,7 @@ class QuakeLevel:
 
 
 def parse_input_args(arguments):
-    parser = argparse.ArgumentParser(description="Quake 3 map list htmlwriter, \
+    parser = argparse.ArgumentParser(description="Quake 3 map list html writer, \
             \n parses a directory of pk3 files and generates \
             a html page with titles and levelshots")
 
@@ -240,7 +241,7 @@ def parse_input_args(arguments):
             action = "store_true")
 
     parser.add_argument('--output-dir',
-            help = "output directoru",
+            help = "output directory",
             default = ".")
 
     parser.add_argument('--input-dir',
@@ -252,7 +253,8 @@ def parse_input_args(arguments):
             default = "images/levels")
 
     parser.add_argument('--temp-dir',
-            help = "temporary directory to extract level data",
+            help = "temporary directory to extract level data generate \
+            automatically but can be overwritten with this flag",
             default=tempfile.mkdtemp())
 
     settings = parser.parse_args()
