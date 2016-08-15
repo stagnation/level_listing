@@ -45,7 +45,6 @@ def is_non_html_image(file):
         return True
     elif file.endswith("TGA"):
         return True
-
     else:
         return False
 
@@ -78,28 +77,27 @@ class QuakeLevel:
 
         convert_image_format = "png"
 
+        zippath = pk3_filepath
         #construct a list of all member inside the 'zip' file.
-        if zipfile.is_zipfile(pk3_filepath):
-            zipper = zipfile.ZipFile(pk3_filepath, 'r')
+        if zipfile.is_zipfile(zippath):
+            zipper = zipfile.ZipFile(zippath, 'r')
         else:
             raise zipfile.BadZipfile()
 
-        content = zipper.namelist()
-        if "maplist.txt" in content:
+        zip_content = zipper.namelist()
+        if "maplist.txt" in zip_content:
             zipper.getinfo("maplist.txt")
             self.is_mappack = True
-        elif "maps.txt" in content:
+        elif "maps.txt" in zip_content:
             zipper.getinfo("maps.txt")
             self.is_mappack = True
 
+        # if verbose and self.is_mappack:
+        #     print str(self.filename) + " is a mappack"
+        # if verbose and self.is_mappack:
+        #     print "mappack " + self.filename + " contains " + str(self.mapcount) + " maps\n"
 
-        if verbose and self.is_mappack:
-            print str(self.filename) + " is a mappack"
-        if verbose and self.is_mappack:
-            print "mappack " + self.filename + " contains " + str(self.mapcount) + " maps\n"
-
-
-        for cont in content:
+        for cont in zip_content:
             #find levelshot: is_image details acceptable image files
             if cont.startswith("levelshots") and is_image(cont):
                 self.levelshot_int_list.append(cont)
@@ -164,25 +162,6 @@ class QuakeLevel:
                     if level_c == a_level_c:
                         self.longname_list[i] = longname_list_copy[k]
 
-        """
-        apparently the name data was in arena file - scrapping this
-
-        #attempt to read mapname data from maplist.txt or maps.txt
-        #this
-
-
-        #attempt to read mapname data from individual map .bsp
-        #only do this if there is no chnace to grab longnames
-        #from arena file - i e there is no .arena file
-
-        if self.is_mappack and self.arena_file == "":
-            print "attempting to read longnames from .bsp files"
-            for level_code in levelcode_list:
-                levelbsp = append(cont.replace("maps/", '').replace(".bsp", ''))
-                levelbsp_file =  zipper.extract(levelbsp, temporary_file_storage)
-                open(levelbsp_file, 'r')
-        """
-
         #if the file is a multiarena, extract all the arenashots
         #first extracted levelshot is the parent levelshot for the arena map
         #the follwoing images are arenashots
@@ -240,25 +219,6 @@ class QuakeLevel:
                     self.longname_list[i] = self.levelcode_list[i]
 
 
-    def check_if_override(self, override_path):
-        for i, levelshot in enumerate(self.levelshot_ext_list):
-            if levelshot == "":
-                if verbose: print "Error: no levelshot is extracted for " + filename
-                if verbose: print "Run init for the file first"
-                return False
-
-
-            else:
-                override_file_path = os.path.join(override_path, self.levelshot_int_list[i].replace("levelshots/", ''))
-                if os.path.isfile(override_file_path):
-                    if verbose: print "levelshot_overwritten for " + self.levelcode_list[i]
-                    self.levelshot_ext_list[i] = override_file_path
-                    return True
-
-                else:
-                    return False
-
-
 def parse_input_args(arguments):
     i = 1
     index_dirr = arguments[i]
@@ -276,11 +236,6 @@ def parse_input_args(arguments):
 
     #make sure to run without reading the file before reading so all pk3 files are represented in the level
     #title file.
-
-        levelshot_override_path = arguments[i]
-    else:
-        levelshot_override_path = os.path.join(index_dirr, "levelshots/")
-    i += 1
 
     read_level_titles = False
     if len(arguments) > i:
@@ -301,7 +256,6 @@ def parse_input_args(arguments):
     settings = {}
     settings['index_dirr'] = index_dirr
     settings['pk3_dirr'] = pk3_dirr
-    settings['levelshot_override_path'] = levelshot_override_path
     settings['read_level_titles'] = read_level_titles
     settings['levelshot_extract_path'] = levelshot_extract_path
     return settings
@@ -367,7 +321,6 @@ def create_level_list(pk3_list, settings):
         level = QuakeLevel()
         try:
             level.init(pk3, settings, temporary_file_dir)
-            level.check_if_override(settings['levelshot_override_path'])
 
             level_list.append(level)
         except zipfile.BadZipfile:
@@ -421,10 +374,9 @@ def write_maps_to_output(output_obj, settings, snippets):
     map_list = generate_map_obj_from_level_list(level_list)
     num_pk3s = len(pk3_list)
 
-    #NB(nils): if long names are to be overwritten do it here
+    # NB(nils): if longnames are to be overwritten do it here
+    # NB(nils): if levelshots are to be overwritten do it here
 
-    # write
-    mapcount = 0
     for (map_index, map_obj) in enumerate(map_list):
             
             interim_title = snippets['level_body'].format(
@@ -487,4 +439,3 @@ if __name__ == '__main__':
     output_obj = write_output_footer(output_obj, settings)
 
     # all open files are closed as the program terminates
-
