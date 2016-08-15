@@ -5,12 +5,14 @@ import os.path
 import re
 import tempfile
 import shutil
+import argparse
 
 from wand.image import Image
 verbose = False
 
 # TODO(nils): overhaul all verbose printing
 # TODO(nils): overhaul QuakeLevel class
+# TODO(nils): many html resource paths are spliced with outputdir, change that to "."
 
 class html_object:
     pass
@@ -220,44 +222,35 @@ class QuakeLevel:
 
 
 def parse_input_args(arguments):
-    i = 1
-    index_dirr = arguments[i]
-    i += 1
+    parser = argparse.ArgumentParser(description="Quake 3 map list htmlwriter, \
+            \n parses a directory of pk3 files and generates \
+            a html page with titles and levelshots")
 
-    pk3_dirr = arguments[i]
-    if verbose:
-        print "found " + str(len(arguments)) + " input arguments\n"
+    parser.add_argument('-v', '--verbose',
+            help = "verbose output",
+            default = False)
 
-        i += 1
+    parser.add_argument('--output-dir',
+            help = "output directoru",
+            default = ".") # NB(nils) ./ ?
 
-    #if the titles are not read from file all level titles will be saved to a file with their levelcodes.
-    #this file can then be overwritten to change the displayed longnames for a specific map
-    #by setting this argument to true and reading longname from the file rather than from the pk3
+    parser.add_argument('--input-dir',
+            help = "input directory with pk3 files",
+            default = ".")
 
-    #make sure to run without reading the file before reading so all pk3 files are represented in the level
-    #title file.
+    parser.add_argument('--read-level_titles',
+            help = "?",
+            default = False)
 
-    read_level_titles = False
-    if len(arguments) > i:
-        if arguments[i] in ["true", "t", "y", "1", "True", "read"]:
-            if verbose: print "reading titles file"
-            read_level_titles = True
-        if arguments[i] in ["false", "f", "n", "0", "False", "write"]:
-            if verbose: print "writing to titles file"
-            read_level_titles = False
-    else:
-        read_level_titles = False
-    i += 1
+    parser.add_argument('--levelshot-extract-path',
+            help = "?",
+            default = "images/levels")
 
-    if verbose: print "---\n"
+    settings = parser.parse_args()
+    print(settings)
+    settings = vars(settings) # convert to dictionary
+    print(settings)
 
-    levelshot_extract_path = os.path.join(index_dirr, "images/levels")
-
-    settings = {}
-    settings['index_dirr'] = index_dirr
-    settings['pk3_dirr'] = pk3_dirr
-    settings['read_level_titles'] = read_level_titles
-    settings['levelshot_extract_path'] = levelshot_extract_path
     return settings
 
 
@@ -265,10 +258,10 @@ def parse_input_args(arguments):
 #     # NB(nils): use argparse library for this
 #     fileformat = '.jpg'
 
-#     reqest_level_dirr = os.path.join(settings['index_dirr'], "images/quake/request/")
-#     html_header_path = os.path.join(settings['index_dirr'], "html_header.html")
+#     reqest_level_dirr = os.path.join(settings['output_dir'], "images/quake/request/")
+#     html_header_path = os.path.join(settings['output_dir'], "html_header.html")
 
-#     level_title_file = os.path.join(settings['index_dirr'], "level_titles.txt")
+#     level_title_file = os.path.join(settings['output_dir'], "level_titles.txt")
 #     level_titles_obj = open(level_title_file, "r+")
 
 #     output_obj = open(output_file, "w")
@@ -294,19 +287,19 @@ def parse_input_args(arguments):
 
 
 def initialize_output_document(settings, snippets):
-    html_header_path = os.path.join(settings['index_dirr'], "html_header.html")
+    html_header_path = os.path.join(settings['output_dir'], "html_header.html")
     header_obj = open(html_header_path, "r")
     header = header_obj.read()
 
     output_obj = html_object()
-    output_obj.path = os.path.join(settings['index_dirr'], "index.html")
+    output_obj.path = os.path.join(settings['output_dir'], "index.html")
 
     output_obj.text = open(output_obj.path, "w")
 
     output_obj.text.write(header)
 
     divider = snippets['divider_title'].format(
-            image = os.path.join(settings['index_dirr'], "images/online_icon.png"),
+            image = os.path.join(settings['output_dir'], "images/online_icon.png"),
             title = "kartor att spela", line1 = "dessa finns och spelas med angivet kommand", line2 = "")
 
     output_obj.text.write(divider)
@@ -362,13 +355,13 @@ def generate_map_obj_from_level_list(level_list):
 
 def write_maps_to_output(output_obj, settings, snippets):
     num_brs = 21 #number of html line break tags needed between rows of floating "level containers"-divs
-    pk3_list = glob.glob(settings['pk3_dirr'] + '/' + '*.pk3')
+    pk3_list = glob.glob(settings['input_dir'] + '/' + '*.pk3')
 
     if verbose: print "found " + str(num_pk3s) + " pk3 files \n --- \n"
 
     level_list = create_level_list(pk3_list, settings)
 
-    # level_title_file = os.path.join(settings['index_dirr'], "level_titles.txt")
+    # level_title_file = os.path.join(settings['output_dir'], "level_titles.txt")
     # level_titles_obj = open(level_title_file, "r+")
 
     map_list = generate_map_obj_from_level_list(level_list)
@@ -378,12 +371,12 @@ def write_maps_to_output(output_obj, settings, snippets):
     # NB(nils): if levelshots are to be overwritten do it here
 
     for (map_index, map_obj) in enumerate(map_list):
-            
+
             interim_title = snippets['level_body'].format(
                     map = map_obj.title,
                     comment = "\callvote map " + map_obj.levelcode,
                     levelshot = map_obj.levelshot)
-            
+
             output_obj.text.write(interim_title)
             # if not settings['read_level_titles']:
             #     level_titles_obj.write(
@@ -403,7 +396,7 @@ def write_output_footer(output_obj, settings):
     for j in range(2*num_brs):
         output_obj.text.write("<br/>")
 
-    html_footer_path = os.path.join(settings['index_dirr'], "html_footer.html")
+    html_footer_path = os.path.join(settings['output_dir'], "html_footer.html")
     footer_obj = open(html_footer_path, "r")
     footer = footer_obj.read()
     output_obj.text.write(footer)
@@ -413,11 +406,11 @@ def write_output_footer(output_obj, settings):
 def construct_html_snippets():
     snippets = {}
 
-    html_divider_title_path = os.path.join(settings['index_dirr'], "html_divider_title.html")
+    html_divider_title_path = os.path.join(settings['output_dir'], "html_divider_title.html")
     html_divider_title = open(html_divider_title_path, 'r').read()
     snippets['divider_title'] = html_divider_title
 
-    html_level_body_path = os.path.join(settings['index_dirr'], "html_level_body.html")
+    html_level_body_path = os.path.join(settings['output_dir'], "html_level_body.html")
     html_level_body = open(html_level_body_path, 'r').read()
     snippets['level_body'] = html_level_body
 
