@@ -355,8 +355,10 @@ def generate_map_obj_from_level_list(level_list, settings):
 
 def write_maps_to_output(output_obj, settings, snippets):
     num_brs = 21  # number of html line break tags needed between rows of floating "level containers"-divs
-    pk3_list = glob.glob(settings['input_dir'] + '/' + '*.pk3')
+    input_dir = settings["input_dir"]
+    pk3_list = glob.glob(input_dir + "/" + "*.pk3")
 
+    assert len(pk3_list) > 0, f"Error: no maps found in input directory {input_dir}"
     level_list = create_level_list(pk3_list, settings)
 
     # level_title_file = os.path.join(settings['output_dir'], "level_titles.txt")
