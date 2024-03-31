@@ -377,6 +377,7 @@ def write_maps_to_output(output_obj, settings, snippets):
             comment="\\callvote map " + map_obj.levelcode,
             levelshot=map_obj.levelshot,
         )
+        output_obj.text.write(interim_title)
 
         # every second map, i e the right map out of two
         if map_index % 2 != 0:
