@@ -1,14 +1,14 @@
-#!/usr/bin/python2
-from __future__ import print_function
-import zipfile
+#!/usr/bin/env python3
+
+import argparse
 import glob
-import sys
 import os.path
 import re
-import tempfile
 import shutil
-import argparse
-
+import sys
+import tempfile
+import zipfile
+from pathlib import Path
 
 from wand.image import Image
 
@@ -250,9 +250,7 @@ def parse_input_args(arguments):
 
     parser.add_argument("--output-dir", help="output directory", default=".")
 
-    parser.add_argument(
-        "--input-dir", help="input directory with pk3 files", default="."
-    )
+    parser.add_argument("--input-dir", help="input directory with pk3 files")
 
     parser.add_argument(
         "--levelshot-extract-path",
@@ -277,19 +275,22 @@ def parse_input_args(arguments):
 
 
 def initialize_output_document(settings, snippets):
-    html_header_path = os.path.join(settings['resource_path'], "html_header.html")
+    output_dir = settings['output_dir']
+    resource_path = settings['resource_path']
+    html_header_path = os.path.join(resource_path, "html_header.html")
     header_obj = open(html_header_path, "r")
     header = header_obj.read()
 
     output_obj = dummy_class()
-    output_obj.path = os.path.join(settings['output_dir'], "index.html")
+    output_obj.path = os.path.join(output_dir, "index.html")
+    Path(output_dir).mkdir(exist_ok=True)
 
     output_obj.text = open(output_obj.path, "w")
 
     output_obj.text.write(header)
 
     divider = snippets["divider_title"].format(
-        image=os.path.join(settings["resource_path"], "images/online_icon.png"),
+        image=os.path.join(resource_path, "images/online_icon.png"),
         title="kartor att spela",
         line1="dessa finns och spelas med angivet kommand",
         line2="",
