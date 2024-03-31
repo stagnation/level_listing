@@ -63,7 +63,14 @@ def is_non_html_image(file):
 
 
 class QuakeLevel:
-    def init(self, pk3_filepath, settings, temporary_file_storage):
+    def init(
+        self,
+        pk3_filepath,
+        *,
+        verbose: bool,
+        levelshot_extract_path: Path,
+        temporary_file_storage,
+    ):
         self.arena_file = ""
 
         self.filename = ""
@@ -130,14 +137,14 @@ class QuakeLevel:
         if len(self.levelcode_list) >= 2:
             self.is_mappack = True
 
-        if settings['verbose'] and self.is_mappack:
+        if verbose and self.is_mappack:
             print(self.filename, "is a mappack and contains ", str(self.mapcount), " maps")
 
         # at this point all variables should be initialized, parsed from the pk3 file.
         if self.arena_file == "":
-            if settings['verbose']:
+            if verbose:
                 print("warning no arena file found for " + self.filename)
-            if settings['verbose']:
+            if verbose:
                 print("longname/s copied from levelcode/s\n")
 
             self.longname_list = self.levelcode_list[:]
@@ -193,8 +200,8 @@ class QuakeLevel:
         # extract levelshots and save the extracted file paths in list levelshot_ext_list
         for levelshot in self.levelshot_int_list:
             if levelshot != "":
-                zipper.extract(levelshot, settings['levelshot_extract_path'])
-                levelshot_file_path = os.path.join(settings['levelshot_extract_path'], levelshot)
+                zipper.extract(levelshot, levelshot_extract_path)
+                levelshot_file_path = os.path.join(levelshot_extract_path, levelshot)
 
                 if is_non_html_image(levelshot_file_path):
                     levelshot_file_path = convert_image(levelshot_file_path, convert_image_format)
@@ -220,16 +227,16 @@ class QuakeLevel:
         if self.is_mappack:
             # make sure that all lists are the same length or throw a warning
             if len(self.levelshot_int_list) != self.mapcount:
-                if settings['verbose']:
+                if verbose:
                     print("warning the number of internal levelshots do not match the number of levels")
             if len(self.levelshot_ext_list) != self.mapcount:
-                if settings['verbose']:
+                if verbose:
                     print("warning the number of external levelsohts do not match the number of levels")
             if len(self.longname_list) != self.mapcount:
-                if settings['verbose']:
+                if verbose:
                     print("warning the number of longnames do not match the number of levels")
             if len(self.levelcode_list) != self.mapcount:
-                if settings['verbose']:
+                if verbose:
                     print("warning the number of levelcodes do not match the number of levels")
 
         if len(self.longname_list) <= len(self.levelcode_list):
@@ -248,13 +255,23 @@ def parse_input_args(arguments):
 
     parser.add_argument("-v", "--verbose", help="verbose output", action="store_true")
 
-    parser.add_argument("--output-dir", help="output directory", default=".")
+    parser.add_argument(
+        "--output-dir",
+        help="output directory",
+        default=".",
+        type=Path,
+    )
 
-    parser.add_argument("--input-dir", help="input directory with pk3 files")
+    parser.add_argument(
+        "--input-dir",
+        type=Path,
+        help="input directory with pk3 files"
+    )
 
     parser.add_argument(
         "--levelshot-extract-path",
         help="path where levelshots should be extracted",
+        type=Path,
         default="images/levels",
     )
 
@@ -262,21 +279,19 @@ def parse_input_args(arguments):
         "--temp-dir",
         help="temporary directory to extract level data generate \
             automatically but can be overwritten with this flag",
+        type=Path,
         default=tempfile.mkdtemp(),
     )
 
     settings = parser.parse_args()
-    settings = vars(settings)  # convert to dictionary
-    settings["resource_path"] = os.path.dirname(os.path.realpath(__file__))
-    if settings["verbose"]:
+    settings.resource_path = Path(os.path.dirname(os.path.realpath(__file__)))
+    if settings.verbose:
         print(settings)
 
     return settings
 
 
-def initialize_output_document(settings, snippets):
-    output_dir = settings['output_dir']
-    resource_path = settings['resource_path']
+def initialize_output_document(output_dir: Path, resource_path: Path, snippets):
     html_header_path = os.path.join(resource_path, "html_header.html")
     header_obj = open(html_header_path, "r")
     header = header_obj.read()
@@ -300,28 +315,39 @@ def initialize_output_document(settings, snippets):
     return output_obj
 
 
-def create_level_list(pk3_list, settings):
+def create_level_list(
+    pk3_list,
+    *,
+    temp_dir: Path,
+    levelshot_extract_path: Path,
+    verbose: bool,
+):
     # create a list of all levels from .pk3 files and init also extracts the levelshot
     level_list = []
 
     for pk3 in pk3_list:
 
-        if settings['verbose']:
+        if verbose:
             print("creating level list from {}".format(pk3))
 
         level = QuakeLevel()
         try:
-            level.init(pk3, settings, settings['temp_dir'])
+            level.init(
+                pk3,
+                levelshot_extract_path=levelshot_extract_path,
+                temporary_file_storage=temp_dir,
+                verbose=verbose,
+            )
 
             level_list.append(level)
         except zipfile.BadZipfile:
-            if settings['verbose']:
+            if verbose:
                 print(pk3 + " is not a valid pk3 file, skipping")
 
     return level_list
 
 
-def generate_map_obj_from_level_list(level_list, settings):
+def generate_map_obj_from_level_list(level_list, verbose: bool):
     map_list = []
     for level in level_list:
         num_maps = level.mapcount
@@ -333,14 +359,14 @@ def generate_map_obj_from_level_list(level_list, settings):
             if j < len(level.longname_list):
                 map_obj.longname = level.longname_list[j]
             else:
-                if settings['verbose']:
+                if verbose:
                     print("warning no longname found in " + level.filename)
                 map_obj.longname = map_obj.levelcode
 
             if j < len(level.levelshot_ext_list):
                 map_obj.levelshot = level.levelshot_ext_list[j]
             else:
-                if settings['verbose']:
+                if verbose:
                     print("warning missing levelshot for " + level.filename)
                 map_obj.levelshot = ""
 
@@ -354,21 +380,34 @@ def generate_map_obj_from_level_list(level_list, settings):
     return map_list
 
 
-def write_maps_to_output(output_obj, settings, snippets):
+def write_maps_to_output(
+    output_obj,
+    snippets,
+    *,
+    output_dir: Path,
+    input_dir: Path,
+    levelshot_extract_path: Path,  # TODO: do we really need two scratch dirs?
+    temp_dir: Path,
+    verbose: bool,
+):
     num_brs = 21  # number of html line break tags needed between rows of floating "level containers"-divs
-    input_dir = settings["input_dir"]
-    pk3_list = glob.glob(input_dir + "/" + "*.pk3")
+    pk3_list = glob.glob(input_dir.as_posix() + "/" + "*.pk3")
 
     assert len(pk3_list) > 0, f"Error: no maps found in input directory {input_dir}"
-    level_list = create_level_list(pk3_list, settings)
+    level_list = create_level_list(
+        pk3_list,
+        temp_dir=temp_dir,
+        levelshot_extract_path=levelshot_extract_path,
+        verbose=verbose,
+    )
 
-    # level_title_file = os.path.join(settings['output_dir'], "level_titles.txt")
+    # level_title_file = os.path.join(output_dir, "level_titles.txt")
     # level_titles_obj = open(level_title_file, "r+")
 
     map_list = generate_map_obj_from_level_list(level_list, settings)
     num_pk3s = len(pk3_list)
 
-    if settings['verbose']:
+    if verbose:
         print("found " + str(num_pk3s) + " pk3 files \n")
 
     # NB(nils): if longnames are to be overwritten do it here
@@ -390,27 +429,27 @@ def write_maps_to_output(output_obj, settings, snippets):
     return output_obj
 
 
-def write_output_footer(output_obj, settings):
+def write_output_footer(output_obj, resource_path: Path):
     # write some extra spacing after the last map
     num_brs = 21  # number of html line break tags needed between rows of floating "level containers"-divs
     for j in range(2 * num_brs):
         output_obj.text.write("<br/>")
 
-    html_footer_path = os.path.join(settings['resource_path'], "html_footer.html")
+    html_footer_path = os.path.join(resource_path, "html_footer.html")
     footer_obj = open(html_footer_path, "r")
     footer = footer_obj.read()
     output_obj.text.write(footer)
     return output_obj
 
 
-def construct_html_snippets(settings):
+def construct_html_snippets(resource_path: Path):
     snippets = {}
 
-    html_divider_title_path = os.path.join(settings['resource_path'], "html_divider_title.html")
+    html_divider_title_path = os.path.join(resource_path, "html_divider_title.html")
     html_divider_title = open(html_divider_title_path, 'r').read()
     snippets['divider_title'] = html_divider_title
 
-    html_level_body_path = os.path.join(settings['resource_path'], "html_level_body.html")
+    html_level_body_path = os.path.join(resource_path, "html_level_body.html")
     html_level_body = open(html_level_body_path, 'r').read()
     snippets['level_body'] = html_level_body
 
@@ -419,12 +458,23 @@ def construct_html_snippets(settings):
 
 if __name__ == '__main__':
     settings = parse_input_args(sys.argv)
-    snippets = construct_html_snippets(settings)
+    snippets = construct_html_snippets(settings.resource_path)
 
-    output_obj = initialize_output_document(settings, snippets)
+    # TODO: must also move resources to the output.
+    output_obj = initialize_output_document(
+        settings.output_dir, settings.resource_path, snippets
+    )
 
-    output_obj = write_maps_to_output(output_obj, settings, snippets)
+    output_obj = write_maps_to_output(
+        output_obj,
+        snippets,
+        verbose=settings.verbose,
+        output_dir=settings.output_dir,
+        input_dir=settings.input_dir,
+        temp_dir=settings.temp_dir,
+        levelshot_extract_path=settings.levelshot_extract_path,
+    )
 
-    output_obj = write_output_footer(output_obj, settings)
+    output_obj = write_output_footer(output_obj, settings.resource_path)
 
     # all open files are closed as the program terminates
