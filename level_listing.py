@@ -200,6 +200,8 @@ class QuakeLevel:
         # extract levelshots and save the extracted file paths in list levelshot_ext_list
         for levelshot in self.levelshot_int_list:
             if levelshot != "":
+                # NB: This will extract the full path from within the archive.
+                # Including the directory "levelshots".
                 zipper.extract(levelshot, levelshot_extract_path)
                 levelshot_file_path = os.path.join(levelshot_extract_path, levelshot)
 
@@ -269,13 +271,6 @@ def parse_input_args(arguments):
     )
 
     parser.add_argument(
-        "--levelshot-extract-path",
-        help="path where levelshots should be extracted",
-        type=Path,
-        default="images/levels",
-    )
-
-    parser.add_argument(
         "--temp-dir",
         help="temporary directory to extract level data generate \
             automatically but can be overwritten with this flag",
@@ -285,6 +280,7 @@ def parse_input_args(arguments):
 
     settings = parser.parse_args()
     settings.resource_path = Path(os.path.dirname(os.path.realpath(__file__))) / "resources"
+    settings.levelshot_extract_path = settings.output_dir
     if settings.verbose:
         print(settings)
 
@@ -324,13 +320,13 @@ def create_level_list(
     levelshot_extract_path: Path,
     verbose: bool,
 ):
-    # create a list of all levels from .pk3 files and init also extracts the levelshot
+    # create a list of all levels from .pk3 files and `init` also extracts the levelshot
     level_list = []
 
     for pk3 in pk3_list:
 
         if verbose:
-            print("creating level list from {}".format(pk3))
+            print(f"creating level list from {pk3}")
 
         level = QuakeLevel()
         try:
@@ -377,6 +373,9 @@ def generate_map_obj_from_level_list(level_list, verbose: bool):
             else:
                 map_obj.title = map_obj.longname
 
+            # if map_obj.levelshot == '':  # DEBUG
+            #     import pdb; pdb.set_trace()  # DEBUG
+
             map_list.append(map_obj)
 
     return map_list
@@ -416,10 +415,18 @@ def write_maps_to_output(
     # NB(nils): if levelshots are to be overwritten do it here
 
     for (map_index, map_obj) in enumerate(map_list):
+        levelshot = Path(map_obj.levelshot)
+        try:
+            levelshot_path = levelshot.relative_to(settings.output_dir)
+        except:
+            # TODO: Removed duplicates from scaled warsow maps.
+            # There is only a single levelshot but multiple maps.
+            # oxodm2a{_105,_110,...}
+            levelshot_path = Path("/dev/null")
         interim_title = snippets["level_body"].format(
             map=map_obj.title,
             comment="\\callvote map " + map_obj.levelcode,
-            levelshot=map_obj.levelshot,
+            levelshot=levelshot_path,
         )
         output_obj.text.write(interim_title)
 
