@@ -284,7 +284,7 @@ def parse_input_args(arguments):
     )
 
     settings = parser.parse_args()
-    settings.resource_path = Path(os.path.dirname(os.path.realpath(__file__)))
+    settings.resource_path = Path(os.path.dirname(os.path.realpath(__file__))) / "resources"
     if settings.verbose:
         print(settings)
 
@@ -292,9 +292,11 @@ def parse_input_args(arguments):
 
 
 def initialize_output_document(output_dir: Path, resource_path: Path, snippets):
-    html_header_path = os.path.join(resource_path, "html_header.html")
+    html_header_path = resource_path / "header.html"
     header_obj = open(html_header_path, "r")
     header = header_obj.read()
+    shutil.copy(resource_path / "style.css", output_dir)
+    shutil.copytree(resource_path / "images", output_dir / "images", dirs_exist_ok=True)
 
     output_obj = dummy_class()
     output_obj.path = os.path.join(output_dir, "index.html")
@@ -435,7 +437,7 @@ def write_output_footer(output_obj, resource_path: Path):
     for j in range(2 * num_brs):
         output_obj.text.write("<br/>")
 
-    html_footer_path = os.path.join(resource_path, "html_footer.html")
+    html_footer_path = resource_path / "footer.html"
     footer_obj = open(html_footer_path, "r")
     footer = footer_obj.read()
     output_obj.text.write(footer)
@@ -445,11 +447,11 @@ def write_output_footer(output_obj, resource_path: Path):
 def construct_html_snippets(resource_path: Path):
     snippets = {}
 
-    html_divider_title_path = os.path.join(resource_path, "html_divider_title.html")
+    html_divider_title_path = resource_path / "divider_title.html"
     html_divider_title = open(html_divider_title_path, 'r').read()
     snippets['divider_title'] = html_divider_title
 
-    html_level_body_path = os.path.join(resource_path, "html_level_body.html")
+    html_level_body_path = resource_path / "level_body.html"
     html_level_body = open(html_level_body_path, 'r').read()
     snippets['level_body'] = html_level_body
 
