@@ -278,6 +278,12 @@ def parse_input_args(arguments):
         default=tempfile.mkdtemp(),
     )
 
+    parser.add_argument(
+        "--filter-scaled-warsow-maps",
+        help="Omit multiple scales of the same warsow/warfork map.",
+        action='store_true',
+    )
+
     settings = parser.parse_args()
     settings.resource_path = Path(os.path.dirname(os.path.realpath(__file__))) / "resources"
     settings.levelshot_extract_path = settings.output_dir
@@ -345,7 +351,8 @@ def create_level_list(
     return level_list
 
 
-def generate_map_obj_from_level_list(level_list, verbose: bool):
+def generate_map_obj_from_level_list(level_list, verbose: bool, filter_scaled_warsow_maps: bool):
+    added = set([])
     map_list = []
     for level in level_list:
         num_maps = level.mapcount
@@ -353,6 +360,7 @@ def generate_map_obj_from_level_list(level_list, verbose: bool):
         for j in range(num_maps):
             map_obj = dummy_class()
             map_obj.levelcode = level.levelcode_list[j]
+            base = map_obj.levelcode
 
             if j < len(level.longname_list):
                 map_obj.longname = level.longname_list[j]
@@ -373,10 +381,28 @@ def generate_map_obj_from_level_list(level_list, verbose: bool):
             else:
                 map_obj.title = map_obj.longname
 
-            # if map_obj.levelshot == '':  # DEBUG
-            #     import pdb; pdb.set_trace()  # DEBUG
+            if map_obj.levelshot == '':  # and map_obj.is_mappack:  # DEBUG
+                try:
+                    map_obj.is_mappack
+                except:
+                    pass
+                # Warsow bundles different scales of the same map as a map pack.
+                # ['oxodm2a', 'oxodm2a_105', 'oxodm2a_110', 'oxodm2a_115', 'oxodm2a_120', 'oxodm2a_125', 'oxodm2a_130']
+                # ['static/levelshots/oxodm2a.jpg', '', '', '', '', '', '']
+                # If the map has an integer suffix we break this loop and go on
+                # the next map.
+                maybe_scaled = map_obj.levelcode.split('_')
+                base = maybe_scaled[0]
+                if len(maybe_scaled) == 2:
+                    try:
+                        int(maybe_scaled[1])
+                        break
+                    except ValueError:
+                        pass
 
-            map_list.append(map_obj)
+            if (not filter_scaled_warsow_maps) or (base not in added):
+                added.add(base)
+                map_list.append(map_obj)
 
     return map_list
 
@@ -405,7 +431,7 @@ def write_maps_to_output(
     # level_title_file = os.path.join(output_dir, "level_titles.txt")
     # level_titles_obj = open(level_title_file, "r+")
 
-    map_list = generate_map_obj_from_level_list(level_list, settings)
+    map_list = generate_map_obj_from_level_list(level_list, settings.verbose, settings.filter_scaled_warsow_maps)
     num_pk3s = len(pk3_list)
 
     if verbose:
